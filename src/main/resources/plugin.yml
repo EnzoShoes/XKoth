@@ -1,0 +1,9 @@
+name: XKoth
+version: '${project.version}'
+main: me.enzosocks.xkoth_socks.XKoth
+api-version: '1.20'
+commands:
+  koth:
+    description: XKoth command
+    usage: /<command> [args]
+    aliases: [xkoth]

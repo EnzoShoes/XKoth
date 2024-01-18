@@ -1,0 +1,37 @@
+koths:
+  koth_1:
+    name: "KOTH 1"
+    world: "world"
+    corner1:
+      x: 0
+      y: 0
+      z: 0
+    corner2:
+      x: 5
+      y: 5
+      z: 5
+    kothTimes:
+      - "10:00"
+      - "2:00"
+    pointsToWin: 100
+    commandsOnWin:
+      - "say %player% has won"
+      - "give %player% diamond 1"
+  koth_2:
+    name: "KOTH 2"
+    world: "world"
+    corner1:
+      x: 10
+      y: 0
+      z: 10
+    corner2:
+      x: 15
+      y: 5
+      z: 15
+    kothTimes:
+      - "11:00"
+      - "3:00"
+    pointsToWin: 100
+    commandsOnWin:
+      - "say %player% has won %koth%"
+      - "give %player% diamond 1"
