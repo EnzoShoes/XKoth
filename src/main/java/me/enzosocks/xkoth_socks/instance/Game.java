@@ -27,17 +27,16 @@ public class Game implements ScoreTracker {
 	}
 
 	public void start() {
-		this.pointCounter = new SimplePointCounter(this, cuboid, pointsToWin);
+		this.pointCounter.startCounting();
 		System.out.println("Game started.");
 		status = GameStatus.RUNNING;
 		points.clear();
 		Bukkit.broadcastMessage("Starting point counter.");
-		this.pointCounter.start();
 	}
 
 	public void stop(boolean forced) {
 		status = GameStatus.STOPPED;
-		this.pointCounter.cancel();
+		this.pointCounter.stopCounting();
 		Optional<Map.Entry<UUID, Integer>> highestScore = getHighestScore();
 
 		if (!highestScore.isPresent()) {
@@ -77,7 +76,7 @@ public class Game implements ScoreTracker {
 		}
 	}
 
-	public BukkitRunnable getPointCounter() {
+	public SimplePointCounter getPointCounter() {
 		return pointCounter;
 	}
 

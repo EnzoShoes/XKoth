@@ -14,8 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class SimplePointCounter extends BukkitRunnable {
-
+public class SimplePointCounter {
 	private Game game;
 	private Cuboid cuboid;
 	private int pointsToWin;
@@ -27,7 +26,7 @@ public class SimplePointCounter extends BukkitRunnable {
 		this.pointsToWin = pointsToWin;
 	}
 
-	public void startRunning() {
+	public void startCounting() {
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -41,23 +40,12 @@ public class SimplePointCounter extends BukkitRunnable {
 				}
 			}
 		};
+
 		runnable.runTaskTimer(XKoth.getInstance(), 0, 20);
 	}
 
-	public void start() {
-		runTaskTimer(XKoth.getInstance(), 0, 20);
-	}
-
-	@Override
-	public void run() {
-		List<Player> players = getPlayersInCuboid();
-		players.forEach(player -> game.addPoint(player, 10));
-		System.out.println("Points: " + game.getPoints());
-
-		Optional<Map.Entry<UUID, Integer>> highestScore = game.getHighestScore();
-		if (highestScore.isPresent() && highestScore.get().getValue() >= pointsToWin) {
-			game.stop(false);
-		}
+	public void stopCounting() {
+		runnable.cancel();
 	}
 
 	private List<Player> getPlayersInCuboid() {
