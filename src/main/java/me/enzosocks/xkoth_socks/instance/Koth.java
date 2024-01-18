@@ -1,7 +1,6 @@
 package me.enzosocks.xkoth_socks.instance;
 
-import me.enzosocks.xkoth_socks.Cuboid;
-import me.enzosocks.xkoth_socks.GameStatus;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.schedulers.Countdown;
 
 import java.time.LocalTime;

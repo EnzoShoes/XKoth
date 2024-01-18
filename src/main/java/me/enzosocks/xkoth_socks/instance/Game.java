@@ -1,12 +1,10 @@
 package me.enzosocks.xkoth_socks.instance;
 
-import me.enzosocks.xkoth_socks.Cuboid;
-import me.enzosocks.xkoth_socks.GameStatus;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.ScoreTracker;
 import me.enzosocks.xkoth_socks.schedulers.SimplePointCounter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 

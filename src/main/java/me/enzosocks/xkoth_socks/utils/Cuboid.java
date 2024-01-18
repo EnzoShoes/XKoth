@@ -1,4 +1,4 @@
-package me.enzosocks.xkoth_socks;
+package me.enzosocks.xkoth_socks.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

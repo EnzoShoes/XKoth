@@ -1,7 +1,6 @@
 package me.enzosocks.xkoth_socks.schedulers;
 
-import me.enzosocks.xkoth_socks.Cuboid;
-import me.enzosocks.xkoth_socks.ScoreTracker;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.Game;
 import org.bukkit.Bukkit;

@@ -1,6 +1,6 @@
 package me.enzosocks.xkoth_socks.schedulers;
 
-import me.enzosocks.xkoth_socks.GameStatus;
+import me.enzosocks.xkoth_socks.instance.GameStatus;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.Koth;
 import org.bukkit.Bukkit;

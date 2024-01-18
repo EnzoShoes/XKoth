@@ -1,6 +1,8 @@
 name: XKoth
 version: '${project.version}'
 main: me.enzosocks.xkoth_socks.XKoth
+website: https://github.com/EnzoShoes
+author: EnzoSocks
 api-version: '1.20'
 commands:
   koth:

@@ -1,10 +1,9 @@
 package me.enzosocks.xkoth_socks.managers;
 
-import me.enzosocks.xkoth_socks.Cuboid;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.Koth;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
