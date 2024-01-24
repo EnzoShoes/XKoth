@@ -1,8 +1,8 @@
 package me.enzosocks.xkoth_socks.schedulers;
 
-import me.enzosocks.xkoth_socks.instance.GameStatus;
 import me.enzosocks.xkoth_socks.XKoth;
-import me.enzosocks.xkoth_socks.instance.Koth;
+import me.enzosocks.xkoth_socks.instance.game.GameStatus;
+import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -13,7 +13,6 @@ public class Countdown extends BukkitRunnable {
 
 	private Koth koth;
 	private long nextStartTime;
-	private boolean countDownStarted = false;
 
 	public Countdown(Koth koth) {
 		this.koth = koth;
@@ -27,7 +26,7 @@ public class Countdown extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (koth.getGame().getStatus() == GameStatus.RUNNING) {
+		if (koth.getGame().getStatus() == GameStatus.RUNNING || nextStartTime == -1) {
 			return;
 		}
 

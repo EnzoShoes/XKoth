@@ -1,4 +1,4 @@
-package me.enzosocks.xkoth_socks.instance;
+package me.enzosocks.xkoth_socks.instance.game;
 
 public enum GameStatus {
 	RUNNING,

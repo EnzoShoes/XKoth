@@ -1,12 +1,5 @@
 package me.enzosocks.xkoth_socks.commands;
 
-import me.enzosocks.xkoth_socks.XKoth;
-import me.enzosocks.xkoth_socks.instance.Koth;
-import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-
 public class KothCommand {// implements CommandExecutor {
 	/*
 	XKoth plugin;

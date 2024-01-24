@@ -1,8 +1,8 @@
 package me.enzosocks.xkoth_socks.schedulers;
 
-import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.XKoth;
-import me.enzosocks.xkoth_socks.instance.Game;
+import me.enzosocks.xkoth_socks.instance.game.Game;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,6 +18,7 @@ public class SimplePointCounter {
 	private Cuboid cuboid;
 	private int pointsToWin;
 	private BukkitRunnable runnable;
+	private Player capturer;
 
 	public SimplePointCounter(Game game, Cuboid cuboid, int pointsToWin) {
 		this.game = game;
@@ -29,8 +30,10 @@ public class SimplePointCounter {
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
-				List<Player> players = getPlayersInCuboid();
-				players.forEach(player -> game.addPoint(player, 10));
+				if (capturer == null || !cuboid.contains(capturer.getLocation())) {
+					capturer = getPlayerInCuboid();
+				}
+				game.addPoint(capturer, 10);
 				System.out.println("Points: " + game.getPoints());
 
 				Optional<Map.Entry<UUID, Integer>> highestScore = game.getHighestScore();
@@ -45,6 +48,12 @@ public class SimplePointCounter {
 
 	public void stopCounting() {
 		runnable.cancel();
+	}
+
+	private Player getPlayerInCuboid() {
+		return Bukkit.getOnlinePlayers().stream()
+				.filter(player -> cuboid.contains(player.getLocation()))
+				.findFirst().orElse(null);
 	}
 
 	private List<Player> getPlayersInCuboid() {

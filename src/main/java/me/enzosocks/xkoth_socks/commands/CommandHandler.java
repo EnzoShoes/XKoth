@@ -29,6 +29,8 @@ public class CommandHandler implements Loader, CommandExecutor {
 		commands.add(new KothListCommand(plugin));
 		commands.add(new KothInfoCommand(plugin));
 		commands.add(new KothVersionCommand(plugin));
+		commands.add(new KothCreateCommand(plugin));
+		commands.add(new KothDeleteCommand(plugin));
 		commands.add(defaultCommand);
 	}
 

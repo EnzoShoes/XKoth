@@ -1,27 +1,39 @@
-package me.enzosocks.xkoth_socks.instance;
+package me.enzosocks.xkoth_socks.instance.koth;
 
-import me.enzosocks.xkoth_socks.utils.Cuboid;
+import me.enzosocks.xkoth_socks.instance.game.Game;
+import me.enzosocks.xkoth_socks.instance.game.GameStatus;
+import me.enzosocks.xkoth_socks.managers.KothSettings;
 import me.enzosocks.xkoth_socks.schedulers.Countdown;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 
 import java.time.LocalTime;
 import java.util.List;
 
 public class Koth {
+	private KothSettings settings;
 	private String name;
 	private Cuboid cuboid;
 	private int pointsToWin;
 	private List<String> commandsOnWin;
 	private Game game;
-	private List<LocalTime> startTimes;
+	private KothSchedule kothSchedule;
 	private Countdown countdown;
 
 	public Koth(String name, Cuboid cuboid, List<LocalTime> startTimes, int pointsToWin, List<String> commandsOnWin) {
 		this.name = name;
 		this.cuboid = cuboid;
-		this.startTimes = startTimes;
+		this.kothSchedule = new KothSchedule(startTimes);
 		this.pointsToWin = pointsToWin;
 		this.commandsOnWin = commandsOnWin;
 		this.game = new Game(cuboid, pointsToWin, commandsOnWin);
+		this.countdown = new Countdown(this);
+	}
+
+	public Koth(String name, Cuboid cuboid, KothSettings settings, KothSchedule schedule) {
+		this.name = name;
+		this.settings = settings;
+		this.kothSchedule = schedule;
+		this.game = new Game(settings.getCuboid(), settings.getPointsToWin(), settings.getCommandsOnWin());
 		this.countdown = new Countdown(this);
 	}
 
@@ -68,16 +80,18 @@ public class Koth {
 	}
 
 	public List<LocalTime> getStartTimes() {
-		return startTimes;
+		return kothSchedule.getStartTimes();
 	}
 
 	public long getNextStartTime() {
-		long currentTime = System.currentTimeMillis() / 1000;
-		for (LocalTime startTime : startTimes) {
-			long startTimeSeconds = startTime.getHour() * 3600 + startTime.getMinute() * 60 + startTime.getSecond();
-			if (startTimeSeconds > currentTime)
-				return startTimeSeconds;
-		}
-		return -1;
+		return kothSchedule.getNextStartTime();
+	}
+
+	public long getMaxTime() {
+		return maxTime;
+	}
+
+	public void setMaxTime(long maxTime) {
+		this.maxTime = maxTime;
 	}
 }

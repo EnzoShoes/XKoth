@@ -1,10 +1,11 @@
 package me.enzosocks.xkoth_socks.managers;
 
-import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.XKoth;
-import me.enzosocks.xkoth_socks.instance.Koth;
+import me.enzosocks.xkoth_socks.instance.koth.Koth;
+import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.time.LocalTime;
@@ -18,7 +19,23 @@ public class ConfigManager {
 
 	public ConfigManager(XKoth plugin) {
 		this.config = plugin.getConfig();
+		this.plugin = plugin;
 		plugin.saveDefaultConfig();
+	}
+
+	public void saveKoths(List<Koth> koths) {
+		for (Koth koth : koths) {
+			config.set("koths." + koth.getName() + ".world", koth.getCuboid().getWorld().getName());
+			config.set("koths." + koth.getName() + ".corner1", koth.getCuboid().getLowerNE().toVector());
+			config.set("koths." + koth.getName() + ".corner2", koth.getCuboid().getUpperSW().toVector());
+			config.set("koths." + koth.getName() + ".kothTimes", koth.getStartTimes());
+			config.set("koths." + koth.getName() + ".commandsOnWin", koth.getCommandsOnWin());
+			ConfigurationSection settings = config.createSection("koths." + koth.getName() + ".settings");
+			settings.set("pointsToWin", koth.getPointsToWin());
+			settings.set("maxTime", koth.getMaxTime());
+			settings.set("winerIfTimeRunsOut", koth.isWinnerIfTimeRunsOut());
+		}
+		plugin.saveConfig();
 	}
 
 	private Koth getKoth(String kothName) {
@@ -48,6 +65,17 @@ public class ConfigManager {
 				startTimes,
 				config.getInt("koths." + kothName + ".pointsToWin"),
 				config.getStringList("koths." + kothName + ".commandsOnWin")
+		);
+	}
+
+	private KothSettings getKothSettings(String kothName) {
+		ConfigurationSection settingsSection = this.config.getConfigurationSection("koths." + kothName + ".settings");
+		if (settingsSection == null)
+			return null;
+		return new KothSettings(
+				settingsSection.getLong("settings.maxTime"),
+				settingsSection.getInt("settings.pointsToWin"),
+				settingsSection.getBoolean("settings.winnerIfTimeRunsOut")
 		);
 	}
 

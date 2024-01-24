@@ -1,11 +1,6 @@
 package me.enzosocks.xkoth_socks.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.sk89q.worldedit.regions.Region;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -13,14 +8,35 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
+import java.util.*;
+
 /**
  * This class is a region/cuboid from one location to another. It can be used for blocks protection and things like WorldEdit.
+ *
  * @author desht (Original code), KingFaris10 (Editor of code)
  */
 public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializable {
 	protected final String worldName;
 	protected final int x1, y1, z1;
 	protected final int x2, y2, z2;
+
+	public static Cuboid fromRegion(Region region) {
+		com.sk89q.worldedit.world.World worldEditWorld = region.getWorld();
+		if (worldEditWorld == null)
+			return null;
+		World bukkitWorld = Bukkit.getWorld(worldEditWorld.getName());
+		return new Cuboid(
+				new Location(
+						bukkitWorld,
+						region.getMinimumPoint().getBlockX(),
+						region.getMinimumPoint().getBlockY(),
+						region.getMinimumPoint().getBlockZ()),
+				new Location(
+						bukkitWorld,
+						region.getMaximumPoint().getBlockX(),
+						region.getMaximumPoint().getBlockY(),
+						region.getMaximumPoint().getBlockZ()));
+	}
 
 	/**
 	 * Construct a Cuboid given two Location objects which represent any two corners of the Cuboid.
@@ -30,7 +46,8 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 * @param l2 - The other corner
 	 */
 	public Cuboid(Location l1, Location l2) {
-		if (!l1.getWorld().equals(l2.getWorld())) throw new IllegalArgumentException("Locations must be on the same world");
+		if (!l1.getWorld().equals(l2.getWorld()))
+			throw new IllegalArgumentException("Locations must be on the same world");
 		this.worldName = l1.getWorld().getName();
 		this.x1 = Math.min(l1.getBlockX(), l2.getBlockX());
 		this.y1 = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -62,12 +79,12 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 * Construct a Cuboid in the given World and xyz co-ordinates
 	 *
 	 * @param world - The Cuboid's world
-	 * @param x1 - X co-ordinate of corner 1
-	 * @param y1 - Y co-ordinate of corner 1
-	 * @param z1 - Z co-ordinate of corner 1
-	 * @param x2 - X co-ordinate of corner 2
-	 * @param y2 - Y co-ordinate of corner 2
-	 * @param z2 - Z co-ordinate of corner 2
+	 * @param x1    - X co-ordinate of corner 1
+	 * @param y1    - Y co-ordinate of corner 1
+	 * @param z1    - Z co-ordinate of corner 1
+	 * @param x2    - X co-ordinate of corner 2
+	 * @param y2    - Y co-ordinate of corner 2
+	 * @param z2    - Z co-ordinate of corner 2
 	 */
 	public Cuboid(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
 		this.worldName = world.getName();
@@ -83,12 +100,12 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 * Construct a Cuboid in the given world name and xyz co-ordinates.
 	 *
 	 * @param worldName - The Cuboid's world name
-	 * @param x1 - X co-ordinate of corner 1
-	 * @param y1 - Y co-ordinate of corner 1
-	 * @param z1 - Z co-ordinate of corner 1
-	 * @param x2 - X co-ordinate of corner 2
-	 * @param y2 - Y co-ordinate of corner 2
-	 * @param z2 - Z co-ordinate of corner 2
+	 * @param x1        - X co-ordinate of corner 1
+	 * @param y1        - Y co-ordinate of corner 1
+	 * @param z1        - Z co-ordinate of corner 1
+	 * @param x2        - X co-ordinate of corner 2
+	 * @param y2        - Y co-ordinate of corner 2
+	 * @param z2        - Z co-ordinate of corner 2
 	 */
 	private Cuboid(String worldName, int x1, int y1, int z1, int x2, int y2, int z2) {
 		this.worldName = worldName;
@@ -102,6 +119,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
 	/**
 	 * Construct a Cuboid using a map with the following keys: worldName, x1, x2, y1, y2, z1, z2
+	 *
 	 * @param map - The map of keys.
 	 */
 	public Cuboid(Map<String, Object> map) {
@@ -195,7 +213,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the size of this Cuboid along the X axis
 	 *
-	 * @return  Size of Cuboid along the X axis
+	 * @return Size of Cuboid along the X axis
 	 */
 	public int getSizeX() {
 		return (this.x2 - this.x1) + 1;
@@ -204,7 +222,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the size of this Cuboid along the Y axis
 	 *
-	 * @return  Size of Cuboid along the Y axis
+	 * @return Size of Cuboid along the Y axis
 	 */
 	public int getSizeY() {
 		return (this.y2 - this.y1) + 1;
@@ -213,7 +231,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the size of this Cuboid along the Z axis
 	 *
-	 * @return  Size of Cuboid along the Z axis
+	 * @return Size of Cuboid along the Z axis
 	 */
 	public int getSizeZ() {
 		return (this.z2 - this.z1) + 1;
@@ -222,7 +240,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the minimum X co-ordinate of this Cuboid
 	 *
-	 * @return  the minimum X co-ordinate
+	 * @return the minimum X co-ordinate
 	 */
 	public int getLowerX() {
 		return this.x1;
@@ -231,7 +249,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the minimum Y co-ordinate of this Cuboid
 	 *
-	 * @return  the minimum Y co-ordinate
+	 * @return the minimum Y co-ordinate
 	 */
 	public int getLowerY() {
 		return this.y1;
@@ -240,7 +258,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the minimum Z co-ordinate of this Cuboid
 	 *
-	 * @return  the minimum Z co-ordinate
+	 * @return the minimum Z co-ordinate
 	 */
 	public int getLowerZ() {
 		return this.z1;
@@ -249,7 +267,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the maximum X co-ordinate of this Cuboid
 	 *
-	 * @return  the maximum X co-ordinate
+	 * @return the maximum X co-ordinate
 	 */
 	public int getUpperX() {
 		return this.x2;
@@ -258,7 +276,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the maximum Y co-ordinate of this Cuboid
 	 *
-	 * @return  the maximum Y co-ordinate
+	 * @return the maximum Y co-ordinate
 	 */
 	public int getUpperY() {
 		return this.y2;
@@ -267,7 +285,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Get the maximum Z co-ordinate of this Cuboid
 	 *
-	 * @return  the maximum Z co-ordinate
+	 * @return the maximum Z co-ordinate
 	 */
 	public int getUpperZ() {
 		return this.z2;
@@ -295,7 +313,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Expand the Cuboid in the given direction by the given amount.  Negative amounts will shrink the Cuboid in the given direction.  Shrinking a cuboid's face past the opposite face is not an error and will return a valid Cuboid.
 	 *
-	 * @param dir - The direction in which to expand
+	 * @param dir    - The direction in which to expand
 	 * @param amount - The number of blocks by which to expand
 	 * @return A new Cuboid expanded by the given direction and amount
 	 */
@@ -321,7 +339,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Shift the Cuboid in the given direction by the given amount.
 	 *
-	 * @param dir - The direction in which to shift
+	 * @param dir    - The direction in which to shift
 	 * @param amount - The number of blocks by which to shift
 	 * @return A new Cuboid shifted by the given direction and amount
 	 */
@@ -332,7 +350,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	/**
 	 * Outset (grow) the Cuboid in the given direction by the given amount.
 	 *
-	 * @param dir - The direction in which to outset (must be Horizontal, Vertical, or Both)
+	 * @param dir    - The direction in which to outset (must be Horizontal, Vertical, or Both)
 	 * @param amount - The number of blocks by which to outset
 	 * @return A new Cuboid outset by the given direction and amount
 	 */
@@ -358,7 +376,7 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 	 * Inset (shrink) the Cuboid in the given direction by the given amount.  Equivalent
 	 * to calling outset() with a negative amount.
 	 *
-	 * @param dir - The direction in which to inset (must be Horizontal, Vertical, or Both)
+	 * @param dir    - The direction in which to inset (must be Horizontal, Vertical, or Both)
 	 * @param amount - The number of blocks by which to inset
 	 * @return A new Cuboid inset by the given direction and amount
 	 */
