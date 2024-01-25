@@ -1,7 +1,10 @@
 package me.enzosocks.xkoth_socks.managers;
 
 import me.enzosocks.xkoth_socks.XKoth;
+import me.enzosocks.xkoth_socks.instance.game.Game;
+import me.enzosocks.xkoth_socks.instance.game.GameRules;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
+import me.enzosocks.xkoth_socks.instance.koth.KothSchedule;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -30,53 +33,54 @@ public class ConfigManager {
 			config.set("koths." + koth.getName() + ".corner2", koth.getCuboid().getUpperSW().toVector());
 			config.set("koths." + koth.getName() + ".kothTimes", koth.getStartTimes());
 			config.set("koths." + koth.getName() + ".commandsOnWin", koth.getCommandsOnWin());
-			ConfigurationSection settings = config.createSection("koths." + koth.getName() + ".settings");
-			settings.set("pointsToWin", koth.getPointsToWin());
-			settings.set("maxTime", koth.getMaxTime());
-			settings.set("winerIfTimeRunsOut", koth.isWinnerIfTimeRunsOut());
+			
+			ConfigurationSection rules = config.createSection("koths." + koth.getName() + ".rules");
+			rules.set("pointsToWin", koth.getRules().getPointsToWin());
+			rules.set("maxTime", koth.getRules().getPointsToWin());
+			rules.set("winerIfTimeRunsOut", koth.getRules().getPointsToWin());
 		}
 		plugin.saveConfig();
 	}
 
 	private Koth getKoth(String kothName) {
-		World world = Bukkit.getWorld(config.getString("koths." + kothName + ".world"));
+		ConfigurationSection currentKoth = config.getConfigurationSection("koths." + kothName);
+		if (currentKoth == null) {
+			throw new IllegalArgumentException("Koth " + kothName + " does not exist!");
+		}
+
+		World world = Bukkit.getWorld(currentKoth.getString("world", "world"));
 		if (world == null) {
-			plugin.getLogger().warning("World " + config.getString("koths." + kothName + ".world") + " does not exist!");
+			plugin.getLogger().warning("World " + currentKoth.getString("world") + " does not exist!");
 			return null;
 		}
 
 		Cuboid cuboid = new Cuboid(
 				world,
-				config.getConfigurationSection("koths." + kothName + ".corner1").getValues(false),
-				config.getConfigurationSection("koths." + kothName + ".corner2").getValues(false)
+				currentKoth.getConfigurationSection("corner1").getValues(false),
+				currentKoth.getConfigurationSection("corner2").getValues(false)
 		);
 
+		//TODO: Replace with KothSchedule loader
 		List<LocalTime> startTimes = new ArrayList<>();
-		config.getStringList("koths." + kothName + ".kothTimes").forEach(time -> {
+		currentKoth.getStringList("kothTimes").forEach(time -> {
 			String[] split = time.split(":");
 			int hour = Integer.parseInt(split[0]);
 			int minute = Integer.parseInt(split[1]);
 			startTimes.add(LocalTime.of(hour, minute, 0));
 		});
+		KothSchedule kothSchedule = new KothSchedule(startTimes);
 
-		return new Koth(
-				kothName,
-				cuboid,
-				startTimes,
-				config.getInt("koths." + kothName + ".pointsToWin"),
-				config.getStringList("koths." + kothName + ".commandsOnWin")
+		GameRules gameRules = new GameRules(
+				currentKoth.getInt("rules.pointsToWin"),
+				currentKoth.getInt("rules.maxTime"),
+				currentKoth.getBoolean("rules.winnerIfTimeRunsOut")
 		);
-	}
 
-	private KothSettings getKothSettings(String kothName) {
-		ConfigurationSection settingsSection = this.config.getConfigurationSection("koths." + kothName + ".settings");
-		if (settingsSection == null)
-			return null;
-		return new KothSettings(
-				settingsSection.getLong("settings.maxTime"),
-				settingsSection.getInt("settings.pointsToWin"),
-				settingsSection.getBoolean("settings.winnerIfTimeRunsOut")
-		);
+		List<String> commandsOnWin = currentKoth.getStringList("commandsOnWin");
+
+		Game game = new Game(cuboid, gameRules, commandsOnWin);
+
+		return new Koth(kothName, game, kothSchedule);
 	}
 
 	public List<Koth> getKoths() {
@@ -84,7 +88,7 @@ public class ConfigManager {
 		for (String kothName : this.config.getConfigurationSection("koths").getKeys(false)) {
 			Koth koth = getKoth(kothName);
 			if (koth != null)
-				koths.add(getKoth(kothName));
+				koths.add(koth);
 		}
 		return koths;
 	}

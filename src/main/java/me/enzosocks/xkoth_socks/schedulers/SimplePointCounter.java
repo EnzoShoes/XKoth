@@ -16,14 +16,12 @@ import java.util.stream.Collectors;
 public class SimplePointCounter {
 	private Game game;
 	private Cuboid cuboid;
-	private int pointsToWin;
 	private BukkitRunnable runnable;
 	private Player capturer;
 
-	public SimplePointCounter(Game game, Cuboid cuboid, int pointsToWin) {
+	public SimplePointCounter(Game game, Cuboid cuboid) {
 		this.game = game;
 		this.cuboid = cuboid;
-		this.pointsToWin = pointsToWin;
 	}
 
 	public void startCounting() {
@@ -37,7 +35,7 @@ public class SimplePointCounter {
 				System.out.println("Points: " + game.getPoints());
 
 				Optional<Map.Entry<UUID, Integer>> highestScore = game.getHighestScore();
-				if (highestScore.isPresent() && highestScore.get().getValue() >= pointsToWin) {
+				if (highestScore.isPresent() && highestScore.get().getValue() >= game.getRules().getPointsToWin()) {
 					game.stop(false);
 				}
 			}

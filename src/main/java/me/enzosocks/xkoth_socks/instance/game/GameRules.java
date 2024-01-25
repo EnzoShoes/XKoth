@@ -1,18 +1,18 @@
-package me.enzosocks.xkoth_socks.managers;
+package me.enzosocks.xkoth_socks.instance.game;
 
-public class KothSettings {
+public class GameRules {
 	private long maxTime;
 	private int pointsToWin;
 	private boolean winnerIfTimeRunsOut;
 
-	public KothSettings() {
-		this(600, 100, true);
-	}
-
-	public KothSettings(long maxTime, int pointsToWin, boolean winnerIfTimeRunsOut) {
+	public GameRules(long maxTime, int pointsToWin, boolean winnerIfTimeRunsOut) {
 		this.maxTime = maxTime;
 		this.pointsToWin = pointsToWin;
 		this.winnerIfTimeRunsOut = winnerIfTimeRunsOut;
+	}
+
+	public GameRules() {
+		this(600, 100, true);
 	}
 
 	public long getMaxTime() {
@@ -26,5 +26,4 @@ public class KothSettings {
 	public boolean isWinnerIfTimeRunsOut() {
 		return winnerIfTimeRunsOut;
 	}
-
 }

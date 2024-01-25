@@ -6,8 +6,6 @@ import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class KothManager {
@@ -52,7 +50,8 @@ public class KothManager {
 		if (cuboid == null)
 			return ErrorMessage.INVALID_REGION;
 
-		Koth koth = new Koth(kothName, cuboid, new ArrayList<>(), 100, Collections.singletonList("give %player% diamond 1"));
+		KothFactory kothFactory = new KothFactory();
+		Koth koth = kothFactory.createKoth(kothName, cuboid);
 		koths.add(koth);
 
 		plugin.getConfigManager().saveKoths(koths);

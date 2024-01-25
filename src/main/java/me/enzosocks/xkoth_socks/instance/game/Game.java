@@ -14,16 +14,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Game {
+	public GameRules rules;
 	private final SimplePointCounter pointCounter;
 	private final Points points = new Points();
 	private final Cuboid cuboid;
 	private final List<String> commandsOnWin;
 	private GameStatus status = GameStatus.STOPPED;
 
-	public Game(Cuboid cuboid, int pointsToWin, List<String> commandsOnWin) {
+	public Game(Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
 		this.commandsOnWin = commandsOnWin;
-		this.pointCounter = new SimplePointCounter(this, cuboid, pointsToWin);
+		this.rules = rules;
 		this.cuboid = cuboid;
+		this.pointCounter = new SimplePointCounter(this, cuboid);
 	}
 
 	public void start() {
@@ -88,4 +90,11 @@ public class Game {
 		this.status = status;
 	}
 
+	public GameRules getRules() {
+		return rules;
+	}
+
+	public List<String> getCommandsOnWin() {
+		return commandsOnWin;
+	}
 }

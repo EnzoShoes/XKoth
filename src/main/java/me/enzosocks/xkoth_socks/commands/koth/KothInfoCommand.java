@@ -18,7 +18,6 @@ public class KothInfoCommand extends KothSubCommand {
 		MessageUtil.sendMessage(sender, "§cKoth info:");
 		MessageUtil.sendMessage(sender, "§a- Name: " + koth.getName());
 		MessageUtil.sendMessage(sender, "§a- World: " + koth.getCuboid().getWorld().getName());
-		MessageUtil.sendMessage(sender, "§a- Points to win: " + koth.getPointsToWin());
 		MessageUtil.sendMessage(sender, "§a- Start times: " + koth.getStartTimes());
 	}
 }

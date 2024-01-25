@@ -16,7 +16,7 @@ koths:
     commandsOnWin:
       - "say %player% has won"
       - "give %player% diamond 1"
-    settings:
+    rules:
       maxTime: 600 # maximum time the koth can will run for
       pointsToWin: 100 # at a rate of 1 point per second
       winnerIfTimeRunsOut: true # the player with the most points wins if the time runs out
@@ -34,11 +34,10 @@ koths:
     kothTimes:
       - "11:00"
       - "3:00"
-    pointsToWin: 100
-    settings:
-      maxTime: 600 # maximum time the koth can will run for
-      pointsToWin: 100 # at a rate of 1 point per second
-      winnerIfTimeRunsOut: true # the player with the most points wins if the time runs out
     commandsOnWin:
       - "say %player% has won %koth%"
       - "give %player% diamond 1"
+    rules:
+      maxTime: 600 # maximum time the koth can will run for
+      pointsToWin: 100 # at a rate of 1 point per second
+      winnerIfTimeRunsOut: true # the player with the most points wins if the time runs out

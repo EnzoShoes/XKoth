@@ -1,8 +1,8 @@
 package me.enzosocks.xkoth_socks.instance.koth;
 
 import me.enzosocks.xkoth_socks.instance.game.Game;
+import me.enzosocks.xkoth_socks.instance.game.GameRules;
 import me.enzosocks.xkoth_socks.instance.game.GameStatus;
-import me.enzosocks.xkoth_socks.managers.KothSettings;
 import me.enzosocks.xkoth_socks.schedulers.Countdown;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 
@@ -10,30 +10,15 @@ import java.time.LocalTime;
 import java.util.List;
 
 public class Koth {
-	private KothSettings settings;
 	private String name;
-	private Cuboid cuboid;
-	private int pointsToWin;
-	private List<String> commandsOnWin;
 	private Game game;
 	private KothSchedule kothSchedule;
 	private Countdown countdown;
 
-	public Koth(String name, Cuboid cuboid, List<LocalTime> startTimes, int pointsToWin, List<String> commandsOnWin) {
+	public Koth(String name, Game game, KothSchedule schedule) {
 		this.name = name;
-		this.cuboid = cuboid;
-		this.kothSchedule = new KothSchedule(startTimes);
-		this.pointsToWin = pointsToWin;
-		this.commandsOnWin = commandsOnWin;
-		this.game = new Game(cuboid, pointsToWin, commandsOnWin);
-		this.countdown = new Countdown(this);
-	}
-
-	public Koth(String name, Cuboid cuboid, KothSettings settings, KothSchedule schedule) {
-		this.name = name;
-		this.settings = settings;
 		this.kothSchedule = schedule;
-		this.game = new Game(settings.getCuboid(), settings.getPointsToWin(), settings.getCommandsOnWin());
+		this.game = game;
 		this.countdown = new Countdown(this);
 	}
 
@@ -59,16 +44,18 @@ public class Koth {
 		return name;
 	}
 
+	// TODO: code smell ? a lot of delegating
+
 	public Cuboid getCuboid() {
-		return cuboid;
+		return game.getCuboid();
 	}
 
-	public int getPointsToWin() {
-		return pointsToWin;
+	public GameRules getRules() {
+		return game.getRules();
 	}
 
 	public List<String> getCommandsOnWin() {
-		return commandsOnWin;
+		return game.getCommandsOnWin();
 	}
 
 	public Countdown getCountdown() {
@@ -85,13 +72,5 @@ public class Koth {
 
 	public long getNextStartTime() {
 		return kothSchedule.getNextStartTime();
-	}
-
-	public long getMaxTime() {
-		return maxTime;
-	}
-
-	public void setMaxTime(long maxTime) {
-		this.maxTime = maxTime;
 	}
 }
