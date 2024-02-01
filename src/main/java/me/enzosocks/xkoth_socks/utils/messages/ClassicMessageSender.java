@@ -8,7 +8,7 @@ public class ClassicMessageSender implements MessageSender {
 		sender.sendMessage(colorize(message));
 	}
 
-	private String colorize(String message) {
+	public String colorize(String message) {
 		if (message == null) return null;
 		return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', message);
 	}

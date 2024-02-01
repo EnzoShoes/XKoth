@@ -1,7 +1,7 @@
 package me.enzosocks.xkoth_socks.commands.koth;
 
-import me.enzosocks.xkoth_socks.SubCommand;
 import me.enzosocks.xkoth_socks.XKoth;
+import me.enzosocks.xkoth_socks.commands.SubCommand;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
 import org.bukkit.command.CommandSender;

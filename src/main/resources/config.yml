@@ -2,6 +2,7 @@ koths:
   koth_1:
     name: "KOTH 1"
     world: "world"
+    mode: "SCORE" # SCORE or CAPTURE
     corner1:
       x: 0
       y: 0
@@ -17,12 +18,46 @@ koths:
       - "say %player% has won"
       - "give %player% diamond 1"
     rules:
-      maxTime: 600 # maximum time the koth can will run for
+      maxTime: 600 # Time in seconds that koth will run for before timing out.
       pointsToWin: 100 # at a rate of 1 point per second
-      winnerIfTimeRunsOut: true # the player with the most points wins if the time runs out
+      winnerIfTimeRunsOut: true # the player with the most points/longest cap wins if the time runs out
+    bossbar:
+      enabled: true
+      only-show-when-capturing: false
+      # set to -1 to make it that everyone in the world can see it
+      # set to 0 to make it that everyone on the server can see it
+      view-distance: 64
+      name: "&#FF0000%displayName% &#DDDDDD| &#FF6600%capturer% &#DDDDDD(%timeLeft_formatted%)"
+      # colors: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
+      color: RED
+      # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
+      style: SEGMENTED_20
+    scoreboard:
+      enabled: true
+      only-show-when-capturing: false
+      # set to -1 to make it that everyone in the world can see it
+      # set to 0 to make it that everyone on the server can see it
+      view-distance: 64
+      title: "&#FF0000&l%displayName%"
+      lines:
+        - " "
+        - "&#FF0000Location:"
+        - " &#444444❙ &fX%x%; Y%y%; Z%z%"
+        - " "
+        - "&#FF0000Leaderboard:"
+        - " &#FFFF001. &f%score_1_player%: &f%score_1_points%"
+        - " &#FFAA002. &f%score_2_player%: &f%score_2_points%"
+        - " &#FF66003. &f%score_3_player%: &f%score_3_points%"
+        - " &#FF0000You: &f%score%"
+        - " "
+        - "&#FF0000Ends in:"
+        - " &#444444❙ &f%maxTimeLeft_formatted%"
+        - " "
+        - "&#FF0000play.yourserver.com"
   koth_2:
     name: "KOTH 2"
     world: "world"
+    mode: "SCORE" # SCORE or CAPTURE
     corner1:
       x: 10
       y: 0
@@ -38,6 +73,17 @@ koths:
       - "say %player% has won %koth%"
       - "give %player% diamond 1"
     rules:
-      maxTime: 600 # maximum time the koth can will run for
+      maxTime: 600 # Time in seconds that koth will run for before timing out.
       pointsToWin: 100 # at a rate of 1 point per second
       winnerIfTimeRunsOut: true # the player with the most points wins if the time runs out
+    bossbar:
+      enabled: true
+      only-show-when-capturing: false
+      # set to -1 to make it that everyone in the world can see it
+      # set to 0 to make it that everyone on the server can see it
+      view-distance: 64
+      name: "&#FF0000%displayName% &#DDDDDD| &#FF6600%capturer% &#DDDDDD(%timeLeft_formatted%)"
+      # colors: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
+      color: RED
+      # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
+      style: SEGMENTED_20

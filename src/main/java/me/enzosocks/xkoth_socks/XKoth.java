@@ -14,7 +14,8 @@ public final class XKoth extends JavaPlugin {
 	private ConfigManager configManager;
 	private KothManager kothManager;
 
-	private List<Loader> loaders;
+	private List<Loader> loaders = new ArrayList<>();
+	;
 
 	private static JavaPlugin instance = null;
 
@@ -25,7 +26,6 @@ public final class XKoth extends JavaPlugin {
 		configManager = new ConfigManager(this);
 		kothManager = new KothManager(this);
 
-		loaders = new ArrayList<>();
 		loaders.add(new CommandHandler(this));
 		loaders.forEach(Loader::load);
 	}

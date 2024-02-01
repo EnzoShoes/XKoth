@@ -1,7 +1,6 @@
 package me.enzosocks.xkoth_socks.commands;
 
 import me.enzosocks.xkoth_socks.Loader;
-import me.enzosocks.xkoth_socks.SubCommand;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.commands.koth.*;
 import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
@@ -22,15 +21,17 @@ public class CommandHandler implements Loader, CommandExecutor {
 
 	public CommandHandler(XKoth plugin) {
 		this.plugin = plugin;
-		defaultCommand = new KothHelpCommand(plugin);
+		defaultCommand = new KothHelpCommand(plugin, commands);
 
 		commands.add(new KothStartCommand(plugin));
 		commands.add(new KothStopCommand(plugin));
+		commands.add(new KothCancelCommand(plugin));
 		commands.add(new KothListCommand(plugin));
 		commands.add(new KothInfoCommand(plugin));
 		commands.add(new KothVersionCommand(plugin));
 		commands.add(new KothCreateCommand(plugin));
 		commands.add(new KothDeleteCommand(plugin));
+		commands.add(new KothTimeCommand());
 		commands.add(defaultCommand);
 	}
 

@@ -1,11 +1,8 @@
 package me.enzosocks.xkoth_socks.instance.game;
 
-import me.enzosocks.xkoth_socks.schedulers.SimplePointCounter;
+import me.enzosocks.xkoth_socks.schedulers.GameLoop;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -13,45 +10,41 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+//TODO: code smell ? Large class
 public class Game {
 	public GameRules rules;
-	private final SimplePointCounter pointCounter;
-	private final Points points = new Points();
-	private final Cuboid cuboid;
+	private final GameLoop pointCounter;
+	private final ScoreTracker scoreTracker = new ScoreTracker();
 	private final List<String> commandsOnWin;
 	private GameStatus status = GameStatus.STOPPED;
+	private String kothName;
 
-	public Game(Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
+	public Game(String kothName, Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
 		this.commandsOnWin = commandsOnWin;
 		this.rules = rules;
-		this.cuboid = cuboid;
-		this.pointCounter = new SimplePointCounter(this, cuboid);
+		this.pointCounter = new GameLoop(this, kothName, cuboid);
+		this.kothName = kothName;
 	}
 
 	public void start() {
-		this.pointCounter.startCounting();
-		BossBar bossbar = Bukkit.createBossBar("Koth", BarColor.RED, BarStyle.SOLID);
-		bossbar.setProgress(1);
+		this.pointCounter.startLoop();
 		System.out.println("Game started.");
 		status = GameStatus.RUNNING;
-		points.clear();
+		scoreTracker.clear();
 		Bukkit.broadcastMessage("Starting point counter.");
 	}
 
-	public void stop(boolean forced) {
+	public void stop(StopReason reason) {
+		stop(reason, "");
+	}
+
+	public void stop(StopReason reason, String winnerName) {
 		status = GameStatus.STOPPED;
-		this.pointCounter.stopCounting();
-		Optional<Map.Entry<UUID, Integer>> highestScore = getHighestScore();
+		// Stop all timers
+		this.pointCounter.stopLoop();
 
-		if (!highestScore.isPresent()) {
-			Bukkit.broadcastMessage("Game has ended. No winner.");
-			return;
-		}
-
-		String winnerName = Bukkit.getPlayer(highestScore.get().getKey()).getName();
-		Bukkit.broadcastMessage("Game has ended. Winner is : " + winnerName);
-
-		if (!forced) {
+		Bukkit.broadcastMessage(reason.getMessage().replace("%player%", winnerName));
+		if (reason.hasWinner) {
 			commandsOnWin.forEach(command ->
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
 							command.replace("%player%", winnerName)));
@@ -59,27 +52,27 @@ public class Game {
 	}
 
 	public Optional<Map.Entry<UUID, Integer>> getHighestScore() {
-		return this.points.getHighestScore();
+		return this.scoreTracker.getHighestScore();
 	}
 
 	public void addPoint(Player player, int amount) {
-		this.points.addPoints(player.getUniqueId(), amount);
+		this.scoreTracker.addPoints(player.getUniqueId(), amount);
 	}
 
 	public void removePoint(Player player, int amount) {
-		this.points.addPoints(player.getUniqueId(), amount);
+		this.scoreTracker.addPoints(player.getUniqueId(), amount);
 	}
 
-	public SimplePointCounter getPointCounter() {
+	public GameLoop getPointCounter() {
 		return pointCounter;
 	}
 
-	public Points getPoints() {
-		return this.points;
+	public ScoreTracker getPoints() {
+		return this.scoreTracker;
 	}
 
 	public Cuboid getCuboid() {
-		return cuboid;
+		return pointCounter.getCuboid();
 	}
 
 	public GameStatus getStatus() {
@@ -96,5 +89,9 @@ public class Game {
 
 	public List<String> getCommandsOnWin() {
 		return commandsOnWin;
+	}
+
+	public String getKothName() {
+		return kothName;
 	}
 }

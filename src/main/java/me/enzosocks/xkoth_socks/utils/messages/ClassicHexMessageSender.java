@@ -11,7 +11,7 @@ public class ClassicHexMessageSender implements MessageSender {
 		sender.sendMessage(colorize(message));
 	}
 
-	private String colorize(String message) {
+	public String colorize(String message) {
 		if (message == null) return null;
 		Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 		Matcher matcher = pattern.matcher(message);

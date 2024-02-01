@@ -1,4 +1,4 @@
-package me.enzosocks.xkoth_socks;
+package me.enzosocks.xkoth_socks.commands;
 
 import org.bukkit.command.CommandSender;
 
@@ -11,6 +11,10 @@ public abstract class SubCommand {
 
 	public String getLabel() {
 		return label;
+	}
+
+	public String getSyntax() {
+		return "/koth " + label;
 	}
 
 	public abstract boolean execute(CommandSender sender, String[] args);

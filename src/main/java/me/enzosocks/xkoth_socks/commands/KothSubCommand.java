@@ -1,6 +1,5 @@
 package me.enzosocks.xkoth_socks.commands;
 
-import me.enzosocks.xkoth_socks.SubCommand;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
 import org.bukkit.command.CommandSender;
@@ -17,7 +16,7 @@ public abstract class KothSubCommand extends SubCommand {
 	@Override
 	public boolean execute(CommandSender sender, String[] args) {
 		if (args.length <= 1) {
-			MessageUtil.sendMessage(sender, "&cUsage: /koth " + getLabel() + " <koth_name>");
+			MessageUtil.sendMessage(sender, "&cUsage: " + getSyntax());
 			return true;
 		}
 
@@ -28,6 +27,11 @@ public abstract class KothSubCommand extends SubCommand {
 
 		run(sender, args);
 		return true;
+	}
+
+	@Override
+	public String getSyntax() {
+		return "/koth " + getLabel() + " <koth_name>";
 	}
 
 	protected abstract void run(CommandSender sender, String[] args);

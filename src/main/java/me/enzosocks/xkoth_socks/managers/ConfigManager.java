@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConfigManager {
 
@@ -21,19 +22,26 @@ public class ConfigManager {
 	private FileConfiguration config;
 
 	public ConfigManager(XKoth plugin) {
+		plugin.saveDefaultConfig();
 		this.config = plugin.getConfig();
 		this.plugin = plugin;
-		plugin.saveDefaultConfig();
 	}
 
 	public void saveKoths(List<Koth> koths) {
 		for (Koth koth : koths) {
 			config.set("koths." + koth.getName() + ".world", koth.getCuboid().getWorld().getName());
-			config.set("koths." + koth.getName() + ".corner1", koth.getCuboid().getLowerNE().toVector());
-			config.set("koths." + koth.getName() + ".corner2", koth.getCuboid().getUpperSW().toVector());
-			config.set("koths." + koth.getName() + ".kothTimes", koth.getStartTimes());
+			config.set("koths." + koth.getName() + ".corner1.x", koth.getCuboid().getLowerNE().getX());
+			config.set("koths." + koth.getName() + ".corner1.y", koth.getCuboid().getLowerNE().getY());
+			config.set("koths." + koth.getName() + ".corner1.z", koth.getCuboid().getLowerNE().getZ());
+			config.set("koths." + koth.getName() + ".corner2.x", koth.getCuboid().getUpperSW().getX());
+			config.set("koths." + koth.getName() + ".corner2.y", koth.getCuboid().getUpperSW().getY());
+			config.set("koths." + koth.getName() + ".corner2.z", koth.getCuboid().getUpperSW().getZ());
+			List<String> startTimes = koth.getStartTimes().stream()
+					.map(time -> String.format("%02d:%02d", time.getHour(), time.getMinute()))
+					.collect(Collectors.toList());
+			config.set("koths." + koth.getName() + ".kothTimes", startTimes);
 			config.set("koths." + koth.getName() + ".commandsOnWin", koth.getCommandsOnWin());
-			
+
 			ConfigurationSection rules = config.createSection("koths." + koth.getName() + ".rules");
 			rules.set("pointsToWin", koth.getRules().getPointsToWin());
 			rules.set("maxTime", koth.getRules().getPointsToWin());
@@ -71,14 +79,14 @@ public class ConfigManager {
 		KothSchedule kothSchedule = new KothSchedule(startTimes);
 
 		GameRules gameRules = new GameRules(
-				currentKoth.getInt("rules.pointsToWin"),
 				currentKoth.getInt("rules.maxTime"),
+				currentKoth.getInt("rules.pointsToWin"),
 				currentKoth.getBoolean("rules.winnerIfTimeRunsOut")
 		);
 
 		List<String> commandsOnWin = currentKoth.getStringList("commandsOnWin");
 
-		Game game = new Game(cuboid, gameRules, commandsOnWin);
+		Game game = new Game(kothName, cuboid, gameRules, commandsOnWin);
 
 		return new Koth(kothName, game, kothSchedule);
 	}
@@ -93,4 +101,7 @@ public class ConfigManager {
 		return koths;
 	}
 
+	public FileConfiguration getConfig() {
+		return config;
+	}
 }

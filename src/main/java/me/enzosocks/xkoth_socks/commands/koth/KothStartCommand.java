@@ -19,7 +19,18 @@ public class KothStartCommand extends KothSubCommand {
 			MessageUtil.sendMessage(sender, "§cKoth not found !");
 			return;
 		}
-		if (!koth.start()) {
+
+		if (args.length > 2) {
+			if (args[2].equalsIgnoreCase("now")) {
+				if (!koth.start()) {
+					MessageUtil.sendMessage(sender, "§cKoth is already running !");
+				}
+				MessageUtil.sendMessage(sender, "§aKoth started !");
+				return;
+			}
+		}
+
+		if (!koth.startIn(61)) {
 			MessageUtil.sendMessage(sender, "§cKoth is already running !");
 		}
 	}

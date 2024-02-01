@@ -3,6 +3,7 @@ package me.enzosocks.xkoth_socks.instance.koth;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class KothSchedule {
 	private long nextStartTime;
@@ -13,20 +14,20 @@ public class KothSchedule {
 	}
 
 	public KothSchedule(List<LocalTime> startTimes) {
-		this.startTimes = startTimes;
+		this.startTimes = startTimes.stream().sorted().collect(Collectors.toList());
 	}
 
 	public List<LocalTime> getStartTimes() {
-		return startTimes;
+		return new ArrayList<>(startTimes);
 	}
 
-	public long getNextStartTime() {
-		long currentTime = System.currentTimeMillis() / 1000;
+	public LocalTime getNextStartTime() {
+		LocalTime currentTime = LocalTime.now();
 		for (LocalTime startTime : startTimes) {
-			long startTimeSeconds = startTime.getHour() * 3600 + startTime.getMinute() * 60 + startTime.getSecond();
-			if (startTimeSeconds > currentTime)
-				return startTimeSeconds;
+			if (startTime.isAfter(currentTime))
+				return startTime;
 		}
-		return -1;
+		// if no start time is after the current time, then next start time must be the first one "tomorrow"
+		return startTimes.isEmpty() ? null : startTimes.get(0);
 	}
 }

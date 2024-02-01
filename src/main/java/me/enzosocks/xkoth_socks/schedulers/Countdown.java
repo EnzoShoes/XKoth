@@ -6,13 +6,17 @@ import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+
 /*
  * All countdown announcements and game start/end logic will be handled here.
  */
 public class Countdown extends BukkitRunnable {
 
 	private Koth koth;
-	private long nextStartTime;
+	private LocalTime nextStartTime;
+	private boolean cancelled;
 
 	public Countdown(Koth koth) {
 		this.koth = koth;
@@ -26,24 +30,35 @@ public class Countdown extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (koth.getGame().getStatus() == GameStatus.RUNNING || nextStartTime == -1) {
+		if (koth.getGame().getStatus() == GameStatus.RUNNING || nextStartTime == null) {
 			return;
 		}
 
-		long currentTime = System.currentTimeMillis() / 1000;
-		long timeRemaining = nextStartTime - currentTime;
+		LocalTime currentTime = LocalTime.now();
 
-		if (timeRemaining < 60 && timeRemaining > 0 && timeRemaining % 15 == 0) {
-			Bukkit.broadcastMessage("Announcement: " + timeRemaining + " seconds until the start of the next KOTH.");
+		if (!cancelled) {
+			long timeRemaining = ChronoUnit.SECONDS.between(currentTime, nextStartTime);
+
+			if (timeRemaining <= 60 && timeRemaining > 0 && timeRemaining % 15 == 0) {
+				Bukkit.broadcastMessage("KOTH " + koth.getName() + " will start in " + timeRemaining + " seconds !");
+			}
 		}
 
-		if (currentTime == nextStartTime) {
-			koth.start();
+		if (currentTime.getHour() == nextStartTime.getHour() && currentTime.getMinute() == nextStartTime.getMinute() && currentTime.getSecond() >= nextStartTime.getSecond()) {
+			if (!cancelled)
+				koth.start();
+
 			nextStartTime = koth.getNextStartTime();
+			cancelled = false;
 		}
 	}
 
-	public void setNextStartTime(long nextStartTime) {
+	public void setNextStartTime(LocalTime nextStartTime) {
+		cancelled = false;
 		this.nextStartTime = nextStartTime;
+	}
+
+	public void cancel() {
+		cancelled = true;
 	}
 }
