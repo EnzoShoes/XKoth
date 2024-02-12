@@ -6,6 +6,7 @@ import me.enzosocks.xkoth_socks.instance.game.GameRules;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.instance.koth.KothSchedule;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
+import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -58,7 +59,7 @@ public class ConfigManager {
 
 		World world = Bukkit.getWorld(currentKoth.getString("world", "world"));
 		if (world == null) {
-			plugin.getLogger().warning("World " + currentKoth.getString("world") + " does not exist!");
+			Logger.warning("World " + currentKoth.getString("world") + " does not exist!");
 			return null;
 		}
 
@@ -88,7 +89,10 @@ public class ConfigManager {
 
 		Game game = new Game(kothName, cuboid, gameRules, commandsOnWin);
 
-		return new Koth(kothName, game, kothSchedule);
+		String displayName = currentKoth.getString("name");
+		displayName = displayName == null ? kothName : displayName;
+
+		return new Koth(kothName, displayName, game, kothSchedule);
 	}
 
 	public List<Koth> getKoths() {

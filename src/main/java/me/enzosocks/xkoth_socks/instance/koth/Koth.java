@@ -6,19 +6,21 @@ import me.enzosocks.xkoth_socks.instance.game.GameStatus;
 import me.enzosocks.xkoth_socks.instance.game.StopReason;
 import me.enzosocks.xkoth_socks.schedulers.Countdown;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
-import org.bukkit.Bukkit;
+import me.enzosocks.xkoth_socks.utils.Logger;
 
 import java.time.LocalTime;
 import java.util.List;
 
 public class Koth {
 	private String name;
+	private String displayName;
 	private Game game;
 	private KothSchedule kothSchedule;
 	private Countdown countdown;
 
-	public Koth(String name, Game game, KothSchedule schedule) {
+	public Koth(String name, String displayName, Game game, KothSchedule schedule) {
 		this.name = name;
+		this.displayName = displayName;
 		this.kothSchedule = schedule;
 		this.game = game;
 		this.countdown = new Countdown(this);
@@ -26,7 +28,7 @@ public class Koth {
 
 	public boolean start() {
 		if (game.getStatus() == GameStatus.RUNNING) {
-			Bukkit.getLogger().warning("Game is already running. Silently ignoring start request.");
+			Logger.warning("Game is already running. Silently ignoring start request.");
 			return false;
 		}
 
@@ -36,7 +38,7 @@ public class Koth {
 
 	public boolean startIn(int seconds) {
 		if (game.getStatus() == GameStatus.RUNNING) {
-			Bukkit.getLogger().warning("Game is already running. Silently ignoring start request.");
+			Logger.warning("Game is already running. Silently ignoring start request.");
 			return false;
 		}
 
@@ -89,5 +91,9 @@ public class Koth {
 
 	public void cancelCountdown() {
 		countdown.cancel();
+	}
+
+	public String getDisplayName() {
+		return displayName;
 	}
 }

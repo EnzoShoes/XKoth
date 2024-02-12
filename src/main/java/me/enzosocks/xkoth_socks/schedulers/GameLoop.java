@@ -5,7 +5,9 @@ import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.game.StopReason;
 import me.enzosocks.xkoth_socks.loaders.BossBarLoader;
 import me.enzosocks.xkoth_socks.loaders.Loader;
+import me.enzosocks.xkoth_socks.loaders.ScoreboardLoader;
 import me.enzosocks.xkoth_socks.schedulers.bossbars.IBossBar;
+import me.enzosocks.xkoth_socks.schedulers.scoreboards.KothScoreboard;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,8 +25,9 @@ public class GameLoop {
 	private Cuboid cuboid;
 	private BukkitRunnable runnable;
 	private Player capturer;
-	private int gameTime = 0;
+	private int gameTime = 0; // time left in seconds before end of game
 	private IBossBar bossbar;
+	private KothScoreboard kothScoreboard;
 
 	public GameLoop(Game game, String kothName, Cuboid cuboid) {
 		this.game = game;
@@ -33,6 +36,8 @@ public class GameLoop {
 		//=> XKoth.getInstance() nonsense will be gone
 		Loader<IBossBar> bossbarLoader = new BossBarLoader();
 		bossbar = bossbarLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
+		Loader<KothScoreboard> scoreboardLoader = new ScoreboardLoader();
+		kothScoreboard = scoreboardLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 	}
 
 	public void startLoop() {
@@ -43,6 +48,7 @@ public class GameLoop {
 				countPoints();
 				checkForTimeout();
 				bossbar.updateBossbar(capturer, gameTime, game);
+				kothScoreboard.updateScoreboard(capturer, gameTime, game);
 			}
 		};
 
@@ -51,7 +57,7 @@ public class GameLoop {
 
 	private void checkForTimeout() {
 		if (game.getRules().getMaxTime() != -1 && ++gameTime >= game.getRules().getMaxTime()) {
-			if (game.getHighestScore().isPresent()) {
+			if (game.getScoreAtPosition(1).isPresent()) {
 				game.stop(StopReason.TIMEOUT, getTopScorer());
 			} else {
 				game.stop(StopReason.TIMEOUT_NO_WINNER);
@@ -66,12 +72,11 @@ public class GameLoop {
 		if (capturer != null) {
 			game.addPoint(capturer, 10);
 		}
-		System.out.println("Points: " + game.getPoints());
 	}
 
 	private String getTopScorer() {
 		//TODO: Have array for highest scorers (for leaderboard) and get from there
-		Optional<Map.Entry<UUID, Integer>> highestScore = game.getHighestScore();
+		Optional<Map.Entry<UUID, Integer>> highestScore = game.getScoreAtPosition(1);
 		if (!highestScore.isPresent()) {
 			return "No one";
 		}
@@ -79,10 +84,12 @@ public class GameLoop {
 		return topScorer.getName();
 	}
 
+
 	public void stopLoop() {
 		runnable.cancel();
 		gameTime = 0;
 		bossbar.setVisible(false);
+		kothScoreboard.hideScoreboard();
 	}
 
 	private Player getPlayerInCuboid() {
@@ -99,5 +106,13 @@ public class GameLoop {
 
 	public Cuboid getCuboid() {
 		return cuboid;
+	}
+
+	public long getTimeLeft() {
+		return game.getRules().getMaxTime() - gameTime;
+	}
+
+	public Player getCapper() {
+		return capturer;
 	}
 }

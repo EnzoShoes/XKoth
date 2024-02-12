@@ -29,7 +29,7 @@ public class BossBarLoader implements Loader<IBossBar> {
 
 		returnMe.setOnlyShowWhenCapturing(config.getBoolean(path + ".bossbar.only-show-when-capturing", false));
 		returnMe.setViewDistance(config.getInt(path + ".bossbar.view-distance", 0));
-		returnMe.setName(config.getString(path + ".bossbar.name", "&c%kothName% KOTH &7| &6%player% &7(%timeLeft%)"));
+		returnMe.setName(config.getString(path + ".bossbar.name", "&c%name% KOTH &7| &6%currentCapturer% &7(%timeLeft%)"));
 		returnMe.setColor(BarColor.valueOf(config.getString(path + ".bossbar.color", BarColor.GREEN.name())));
 		returnMe.setStyle(BarStyle.valueOf(config.getString(path + ".bossbar.style", BarStyle.SEGMENTED_20.name())));
 

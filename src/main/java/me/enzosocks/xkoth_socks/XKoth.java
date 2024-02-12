@@ -3,6 +3,8 @@ package me.enzosocks.xkoth_socks;
 import me.enzosocks.xkoth_socks.commands.CommandHandler;
 import me.enzosocks.xkoth_socks.managers.ConfigManager;
 import me.enzosocks.xkoth_socks.managers.KothManager;
+import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
+import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,6 +15,7 @@ public final class XKoth extends JavaPlugin {
 
 	private ConfigManager configManager;
 	private KothManager kothManager;
+	private LocalPlaceholder localPlaceholder;
 
 	private List<Loader> loaders = new ArrayList<>();
 	;
@@ -23,11 +26,15 @@ public final class XKoth extends JavaPlugin {
 	public void onEnable() {
 		// Plugin startup logic
 		instance = this;
+		new Logger("&cXKoth");
+		Logger.info("Starting XKoth...");
 		configManager = new ConfigManager(this);
 		kothManager = new KothManager(this);
 
 		loaders.add(new CommandHandler(this));
 		loaders.forEach(Loader::load);
+
+		localPlaceholder = new LocalPlaceholder(kothManager);
 	}
 
 	@Override

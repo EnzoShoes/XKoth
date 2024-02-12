@@ -2,7 +2,6 @@ package me.enzosocks.xkoth_socks.schedulers.bossbars;
 
 import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -18,7 +17,7 @@ public abstract class IBossBar {
 	protected BossBar bossbar;
 	private boolean onlyShowWhenCapturing;
 	private int viewDistance = 0;
-	private String title;
+	protected String title;
 
 	public IBossBar() {
 		bossbar = Bukkit.createBossBar("test", BarColor.RED, BarStyle.SOLID);
@@ -45,17 +44,6 @@ public abstract class IBossBar {
 		return Bukkit.getOnlinePlayers().stream()
 				.filter(player -> player.getLocation().distance(cuboid.getLowerNE()) <= this.viewDistance)
 				.collect(Collectors.toList());
-	}
-
-	protected String getFormattedBossbarTitle(Player capturer, String kothName, int gameTime, long maxTime) {
-		String formattedTitle = this.title;
-		formattedTitle = formattedTitle.replace("%kothName%", kothName);
-		formattedTitle = formattedTitle.replace("%player%", capturer == null ? "---" : capturer.getName());
-
-		long remainingTimeInSeconds = maxTime - gameTime;
-		String timeLeftFormatted = String.format("%02d:%02d", remainingTimeInSeconds / 60, remainingTimeInSeconds % 60);
-		formattedTitle = formattedTitle.replace("%timeLeft%", timeLeftFormatted);
-		return ChatColor.translateAlternateColorCodes('&', formattedTitle);
 	}
 
 	public void setViewDistance(int viewDistance) {

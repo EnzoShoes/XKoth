@@ -30,8 +30,12 @@ public class ScoreTracker {
 		return points.getOrDefault(playerId, 0);
 	}
 
-	public Optional<Map.Entry<UUID, Integer>> getHighestScore() {
-		return this.points.entrySet().stream().max(Map.Entry.comparingByValue());
+	public Optional<Map.Entry<UUID, Integer>> getScoreAtPosition(int position) {
+		return this.points.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).skip(position - 1).findFirst();
+	}
+
+	public Optional<Integer> getPointsForPosition(int position) {
+		return getScoreAtPosition(position).map(Map.Entry::getValue);
 	}
 
 	public boolean isEmpty() {

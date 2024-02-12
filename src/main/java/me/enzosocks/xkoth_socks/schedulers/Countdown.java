@@ -58,6 +58,10 @@ public class Countdown extends BukkitRunnable {
 		this.nextStartTime = nextStartTime;
 	}
 
+	public LocalTime getNextStartTime() {
+		return nextStartTime;
+	}
+
 	public void cancel() {
 		cancelled = true;
 	}

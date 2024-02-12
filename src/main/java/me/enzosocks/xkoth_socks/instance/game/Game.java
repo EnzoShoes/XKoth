@@ -13,7 +13,7 @@ import java.util.UUID;
 //TODO: code smell ? Large class
 public class Game {
 	public GameRules rules;
-	private final GameLoop pointCounter;
+	private final GameLoop gameLoop;
 	private final ScoreTracker scoreTracker = new ScoreTracker();
 	private final List<String> commandsOnWin;
 	private GameStatus status = GameStatus.STOPPED;
@@ -22,12 +22,12 @@ public class Game {
 	public Game(String kothName, Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
 		this.commandsOnWin = commandsOnWin;
 		this.rules = rules;
-		this.pointCounter = new GameLoop(this, kothName, cuboid);
+		this.gameLoop = new GameLoop(this, kothName, cuboid);
 		this.kothName = kothName;
 	}
 
 	public void start() {
-		this.pointCounter.startLoop();
+		this.gameLoop.startLoop();
 		System.out.println("Game started.");
 		status = GameStatus.RUNNING;
 		scoreTracker.clear();
@@ -41,7 +41,7 @@ public class Game {
 	public void stop(StopReason reason, String winnerName) {
 		status = GameStatus.STOPPED;
 		// Stop all timers
-		this.pointCounter.stopLoop();
+		this.gameLoop.stopLoop();
 
 		Bukkit.broadcastMessage(reason.getMessage().replace("%player%", winnerName));
 		if (reason.hasWinner) {
@@ -51,8 +51,11 @@ public class Game {
 		}
 	}
 
-	public Optional<Map.Entry<UUID, Integer>> getHighestScore() {
-		return this.scoreTracker.getHighestScore();
+	/*
+	 * Returns the score at position (1 is first place)
+	 */
+	public Optional<Map.Entry<UUID, Integer>> getScoreAtPosition(int pos) {
+		return this.scoreTracker.getScoreAtPosition(pos);
 	}
 
 	public void addPoint(Player player, int amount) {
@@ -63,16 +66,16 @@ public class Game {
 		this.scoreTracker.addPoints(player.getUniqueId(), amount);
 	}
 
-	public GameLoop getPointCounter() {
-		return pointCounter;
+	public GameLoop getGameLoop() {
+		return gameLoop;
 	}
 
-	public ScoreTracker getPoints() {
+	public ScoreTracker getScoreTracker() {
 		return this.scoreTracker;
 	}
 
 	public Cuboid getCuboid() {
-		return pointCounter.getCuboid();
+		return gameLoop.getCuboid();
 	}
 
 	public GameStatus getStatus() {

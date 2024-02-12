@@ -27,7 +27,7 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      name: "&#FF0000%displayName% &#DDDDDD| &#FF6600%capturer% &#DDDDDD(%timeLeft_formatted%)"
+      name: "&#FF0000%name% &#DDDDDD| &#FF6600%currentCapturer% &#DDDDDD(%timeLeft%)"
       # colors: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
       color: RED
       # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
@@ -38,22 +38,22 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      title: "&#FF0000&l%displayName%"
+      title: "&#FF0000&l%name%"
       lines:
         - " "
-        - "&#FF0000Location:"
-        - " &#444444❙ &fX%x%; Y%y%; Z%z%"
+        - "&cLocation:"
+        - " &7| &fX%x%; Y%y%; Z%z%"
         - " "
-        - "&#FF0000Leaderboard:"
-        - " &#FFFF001. &f%score_1_player%: &f%score_1_points%"
-        - " &#FFAA002. &f%score_2_player%: &f%score_2_points%"
-        - " &#FF66003. &f%score_3_player%: &f%score_3_points%"
-        - " &#FF0000You: &f%score%"
+        - "&cLeaderboard:"
+        - " &e. &f%score_1_player%: &f%score_1_points%"
+        - " &6. &f%score_2_player%: &f%score_2_points%"
+        - " &6. &f%score_3_player%: &f%score_3_points%"
+        - " &cYou: &f%score%"
         - " "
-        - "&#FF0000Ends in:"
-        - " &#444444❙ &f%maxTimeLeft_formatted%"
+        - "&cEnds in:"
+        - " &7❙ &f%timeLeft%"
         - " "
-        - "&#FF0000play.yourserver.com"
+        - "&cplay.yourserver.com"
   koth_2:
     name: "KOTH 2"
     world: "world"
@@ -87,3 +87,25 @@ koths:
       color: RED
       # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
       style: SEGMENTED_20
+    scoreboard:
+      enabled: true
+      only-show-when-capturing: false
+      # set to -1 to make it that everyone in the world can see it
+      # set to 0 to make it that everyone on the server can see it
+      view-distance: 64
+      title: "&#FF0000&l%kothName%"
+      lines:
+        - " "
+        - "&cLocation:"
+        - " &7| &fX%x%; Y%y%; Z%z%"
+        - " "
+        - "&cLeaderboard:"
+        - " &e1. &f%score_player_1%: &f%score_points_1%"
+        - " &62. &f%score_player_1%: &f%score_points_2%"
+        - " &63. &f%score_player_1%: &f%score_points_3%"
+        - " &cYou: &f%score%"
+        - " "
+        - "&cEnds in:"
+        - " &7❙ &f%timeLeft%" # context dependant
+        - " "
+        - "&cplay.yourserver.com"
