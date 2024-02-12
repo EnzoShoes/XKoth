@@ -79,9 +79,11 @@ public class LocalPlaceholder {
 		while (matcher.find()) {
 			String stringPlaceholder = matcher.group(0);
 			String regex = matcher.group(1).replace(realPrefix, "");
+
 			if (kothName != null && !kothName.isEmpty()) {
 				regex = kothName + "_" + regex;
 			}
+
 			String replace = this.onRequest(player, regex);
 			if (replace != null) {
 				placeholder = placeholder.replace(stringPlaceholder, replace);
@@ -96,7 +98,7 @@ public class LocalPlaceholder {
 	}
 
 	public String setPlaceholders(String kothName, String placeholder) {
-		return this.onRequest(null, placeholder);
+		return setPlaceholders(null, placeholder, kothName);
 	}
 
 	/**
@@ -155,7 +157,7 @@ public class LocalPlaceholder {
 		if (placeHolder.equalsIgnoreCase("scorePlayer3"))
 			return String.valueOf(koth.getGame().getScoreTracker().getPointsForPosition(1));
 
-		if (placeHolder.equalsIgnoreCase("score"))
+		if (placeHolder.equalsIgnoreCase("score") && player != null)
 			return String.valueOf(koth.getGame().getScoreTracker().getPoints(player.getUniqueId()));
 
 		if (placeHolder.equalsIgnoreCase("countdown"))
