@@ -5,9 +5,10 @@ import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.game.StopReason;
 import me.enzosocks.xkoth_socks.loaders.BossBarLoader;
 import me.enzosocks.xkoth_socks.loaders.Loader;
-import me.enzosocks.xkoth_socks.loaders.ScoreboardLoader;
+import me.enzosocks.xkoth_socks.loaders.ScoreboardManagerLoader;
 import me.enzosocks.xkoth_socks.schedulers.bossbars.IBossBar;
-import me.enzosocks.xkoth_socks.schedulers.scoreboards.KothScoreboard;
+import me.enzosocks.xkoth_socks.schedulers.scoreboards.ScoreboardData;
+import me.enzosocks.xkoth_socks.schedulers.scoreboards.ScoreboardManager;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -20,14 +21,15 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class GameLoop {
+public class GameLoop implements ScoreboardData {
 	private Game game;
 	private Cuboid cuboid;
 	private BukkitRunnable runnable;
 	private Player capturer;
 	private int gameTime = 0; // time left in seconds before end of game
 	private IBossBar bossbar;
-	private KothScoreboard kothScoreboard;
+	//	private KothScoreboard kothScoreboard;
+	private ScoreboardManager manager;
 
 	public GameLoop(Game game, String kothName, Cuboid cuboid) {
 		this.game = game;
@@ -36,8 +38,10 @@ public class GameLoop {
 		//=> XKoth.getInstance() nonsense will be gone
 		Loader<IBossBar> bossbarLoader = new BossBarLoader();
 		bossbar = bossbarLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
-		Loader<KothScoreboard> scoreboardLoader = new ScoreboardLoader();
-		kothScoreboard = scoreboardLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
+		//Loader<KothScoreboard> scoreboardLoader = new ScoreboardLoader();
+		//kothScoreboard = scoreboardLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
+		Loader<ScoreboardManager> scoreboardManagerLoader = new ScoreboardManagerLoader();
+		manager = scoreboardManagerLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 	}
 
 	public void startLoop() {
@@ -48,7 +52,8 @@ public class GameLoop {
 				countPoints();
 				checkForTimeout();
 				bossbar.updateBossbar(capturer, gameTime, game);
-				kothScoreboard.updateScoreboard(capturer, gameTime, game);
+//				kothScoreboard.updateScoreboard(capturer, gameTime, game);
+				manager.updateScoreboards(GameLoop.this);
 			}
 		};
 
@@ -104,6 +109,7 @@ public class GameLoop {
 				.collect(Collectors.toList());
 	}
 
+	@Override
 	public Cuboid getCuboid() {
 		return cuboid;
 	}
@@ -112,7 +118,12 @@ public class GameLoop {
 		return game.getRules().getMaxTime() - gameTime;
 	}
 
+	@Override
 	public Player getCapper() {
 		return capturer;
+	}
+
+	public String getKothName() {
+		return game.getKothName();
 	}
 }

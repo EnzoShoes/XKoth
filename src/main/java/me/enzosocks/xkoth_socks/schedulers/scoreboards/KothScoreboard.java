@@ -1,115 +1,51 @@
 package me.enzosocks.xkoth_socks.schedulers.scoreboards;
 
-import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
+import me.enzosocks.xkoth_socks.utils.XScoreboard;
 import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
-import java.util.*;
-import java.util.stream.Collectors;
+public class KothScoreboard extends XScoreboard {
+	private ScoreboardConfig config;
 
-public class KothScoreboard {
-	private boolean enabled;
-	private boolean onlyShowWhenCapturing;
-	private int viewDistance;
-	private String title;
-	private List<String> lines;
-	Scoreboard scoreboard;
-	private Set<Player> playersSeeingScoreboard = new HashSet<>();
-
-	public KothScoreboard(boolean enabled, boolean onlyShowWhenCapturing, int viewDistance, String title, List<String> lines) {
-		this.enabled = enabled;
-		this.onlyShowWhenCapturing = onlyShowWhenCapturing;
-		this.viewDistance = viewDistance;
-		this.title = title;
-		this.lines = lines;
-
-		this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-
-		Objective obj = scoreboard.registerNewObjective("koth", "dummy");
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		obj.setDisplayName(title);
-
-
-		ChatColor[] colors = ChatColor.values();
-		for (int i = 0; i < lines.size(); i++) {
-			Team team = scoreboard.registerNewTeam(i + "");
-			team.addEntry(colors[i].toString());
-			team.setPrefix(colors[i].toString());
-			team.setSuffix(ChatColor.RESET + lines.get(i));
-
-			obj.getScore(colors[i].toString()).setScore(lines.size() - i);
-		}
+	public KothScoreboard(ScoreboardConfig config) {
+		super(config.getTitle(), config.getLines());
+		this.config = config;
 	}
 
-	public void updateScoreboard(Player capturer, int gameTime, Game game) {
-		if (!enabled)
+	public void update(Player player, ScoreboardData scoreboardData) {
+		if (!shouldShowToPlayer(scoreboardData.getCapper(), player, scoreboardData.getCuboid())) {
+			player.setScoreboard(null);
 			return;
-
-		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
-		scoreboard.getObjective("koth").setDisplayName(MessageUtil.colorize(placeholder.setPlaceholders(game.getKothName(), title)));
-		for (int i = 0; i < lines.size(); i++) {
-			Team team = scoreboard.getTeam(i + "");
-			if (team != null)
-				team.setSuffix(ChatColor.RESET + MessageUtil.colorize(placeholder.setPlaceholders(game.getKothName(), lines.get(i))));
-			System.out.println("line + " + i + ": " + team.getSuffix());
 		}
 
-		List<Player> playersToShowBar = getPlayersToShowBar(capturer, game.getCuboid());
-		Bukkit.getOnlinePlayers().forEach(player -> {
-			if (playersToShowBar.contains(player) && !playersSeeingScoreboard.contains(player)) {
-				playersSeeingScoreboard.add(player);
-				player.setScoreboard(scoreboard);
-			} else if (playersSeeingScoreboard.contains(player) && !playersToShowBar.contains(player)) {
-				playersSeeingScoreboard.remove(player);
-				player.setScoreboard(null);
-			}
-		});
+		String placeholderedTitle = LocalPlaceholder
+				.replacePlaceholders(player, config.getTitle(), scoreboardData.getKothName());
+
+		this.setTitle(MessageUtil.colorize(placeholderedTitle));
+		for (int i = 0; i < config.getLines().size(); i++) {
+			String placeholderedLine = LocalPlaceholder
+					.replacePlaceholders(player, config.getLines().get(i), scoreboardData.getKothName());
+
+			this.setLine(i, MessageUtil.colorize(placeholderedLine));
+		}
+		
+		player.setScoreboard(this.getScoreboard());
 	}
 
-	protected List<Player> getPlayersToShowBar(Player capturer, Cuboid cuboid) {
-		if (onlyShowWhenCapturing)
+	protected boolean shouldShowToPlayer(Player capturer, Player player, Cuboid cuboid) {
+		if (config.isOnlyShowWhenCapturing())
 			//TODO: When Player becomes refactored to handle teams, return actual team members here
-			return capturer == null ? new ArrayList<>() : Arrays.asList(capturer);
-		return getPlayersWithinViewDistance(cuboid);
+			return player.getUniqueId() == player.getUniqueId();
+		return isPlayerWithinViewDistance(player, cuboid);
 	}
 
-	protected List<Player> getPlayersWithinViewDistance(Cuboid cuboid) {
-		if (viewDistance == -1)
-			return Bukkit.getOnlinePlayers().stream().filter(player -> player.getWorld().equals(cuboid.getWorld())).collect(Collectors.toList());
-		if (viewDistance == 0)
-			return new ArrayList<>(Bukkit.getOnlinePlayers());
-		return Bukkit.getOnlinePlayers().stream()
-				.filter(player -> player.getLocation().distance(cuboid.getLowerNE()) <= this.viewDistance)
-				.collect(Collectors.toList());
-	}
-
-	protected String formatPlaceholders(String stringToFormat, Game game, int gameTime, long maxTime) {
-		String formattedTitle = stringToFormat;
-
-		Location kothLocation = game.getCuboid().getCenter();
-		formattedTitle = formattedTitle.replace("%x%", kothLocation.getX() + "");
-		formattedTitle = formattedTitle.replace("%y%", kothLocation.getY() + "");
-		formattedTitle = formattedTitle.replace("%z%", kothLocation.getZ() + "");
-		formattedTitle = formattedTitle.replace("%world%", kothLocation.getWorld().getName());
-		formattedTitle = formattedTitle.replace("%kothName%", game.getKothName());
-		long remainingTimeInSeconds = maxTime - gameTime;
-		String timeLeftFormatted = String.format("%02d:%02d", remainingTimeInSeconds / 60, remainingTimeInSeconds % 60);
-		formattedTitle = formattedTitle.replace("%timeLeft%", timeLeftFormatted);
-
-		return ChatColor.translateAlternateColorCodes('&', formattedTitle);
-	}
-
-	public void hideScoreboard() {
-		playersSeeingScoreboard.forEach(player -> player.setScoreboard(null));
-		playersSeeingScoreboard.clear();
+	protected boolean isPlayerWithinViewDistance(Player player, Cuboid cuboid) {
+		if (config.getViewDistance() == -1)
+			return player.getWorld().equals(cuboid.getWorld());
+		if (config.getViewDistance() == 0)
+			return true;
+		return player.getLocation().distance(cuboid.getLowerNE()) <= config.getViewDistance();
 	}
 }

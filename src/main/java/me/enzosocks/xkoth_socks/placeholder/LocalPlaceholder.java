@@ -7,19 +7,19 @@ import me.enzosocks.xkoth_socks.utils.TimeUtil;
 import me.enzosocks.xkoth_socks.utils.optionalparser.IntegerOptionalParser;
 import me.enzosocks.xkoth_socks.utils.optionalparser.OptionalParser;
 import me.enzosocks.xkoth_socks.utils.optionalparser.PlayerOptionalParser;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LocalPlaceholder {
 
-	private final Map<Class<?>, OptionalParser<?>> parsers = new HashMap<>();
+	private final Map<Predicate<String>, OptionalParser<?>> parsers = new HashMap<>();
 	private final String prefix = "xkoth";
 	//Placeholder pattern (ex: %player_name%)
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
@@ -37,8 +37,8 @@ public class LocalPlaceholder {
 	public LocalPlaceholder(KothManager manager) {
 		this.manager = manager;
 
-		parsers.put(OfflinePlayer.class, new PlayerOptionalParser());
-		parsers.put(Integer.class, new IntegerOptionalParser());
+		parsers.put((str) -> str.startsWith("scorePlayer"), new PlayerOptionalParser());
+		parsers.put((str) -> str.startsWith("scorePoints"), new IntegerOptionalParser());
 
 		instance = this;
 	}
@@ -68,6 +68,10 @@ public class LocalPlaceholder {
 		}
 
 		return placeholder;
+	}
+
+	public static String replacePlaceholders(Player player, String placeholder, String kothName) {
+		return getInstance().setPlaceholders(player, placeholder, kothName);
 	}
 
 	/**
@@ -140,20 +144,27 @@ public class LocalPlaceholder {
 		return this.onRequestKoth(player, koth, placeHolder);
 	}
 
-	private <T> String parseOptional(Optional<T> optional) {
-		Logger.error(optional.getClass().getGenericSuperclass().toString());
-		OptionalParser<T> parser = (OptionalParser<T>) parsers.get(optional.get().getClass());
+	private <T> String parseOptional(Optional<T> optional, String placeHolder) {
+		OptionalParser<T> parser = (OptionalParser<T>) parsers.entrySet()
+				.stream()
+				.filter(e -> e.getKey().test(placeHolder))
+				.map(Map.Entry::getValue)
+				.findFirst()
+				.orElse(null);
 
 		if (parser != null) {
 			return parser.parse(optional);
 		}
+
+		Logger.error("empty");
 		return "empty";
 	}
 
 	public String onRequestKoth(Player player, Koth koth, String placeHolder) {
 		Optional<?> optional = getOptionalValue(player, koth, placeHolder);
+
 		if (optional != null) {
-			return parseOptional(optional);
+			return parseOptional(optional, placeHolder);
 		}
 
 		if (placeHolder.equalsIgnoreCase("name"))
