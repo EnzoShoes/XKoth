@@ -1,5 +1,5 @@
 koths:
-  koth_1:
+  koth1:
     name: "KOTH 1"
     world: "world"
     mode: "SCORE" # SCORE or CAPTURE
@@ -27,7 +27,7 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      name: "&#FF0000%name% &#DDDDDD| &#FF6600%currentCapturer% &#DDDDDD(%timeLeft%)"
+      name: "#FF0000%name% #DDDDDD| #FF6600%currentCapturer% #DDDDDD(%timeLeft%)"
       # colors: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
       color: RED
       # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
@@ -38,23 +38,23 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      title: "&#FF0000&l%name%"
+      title: "#FF0000&l%name%"
       lines:
         - " "
         - "&cLocation:"
         - " &7| &fX%x%; Y%y%; Z%z%"
         - " "
         - "&cLeaderboard:"
-        - " &e. &f%score_1_player%: &f%score_1_points%"
-        - " &6. &f%score_2_player%: &f%score_2_points%"
-        - " &6. &f%score_3_player%: &f%score_3_points%"
+        - " &e1. &f%scorePlayer1%: &f%scorePoints1%"
+        - " &62. &f%scorePlayer2%: &f%scorePoints2%"
+        - " &63. &f%scorePlayer3%: &f%scorePoints3%"
         - " &cYou: &f%score%"
         - " "
         - "&cEnds in:"
         - " &7❙ &f%timeLeft%"
         - " "
         - "&cplay.yourserver.com"
-  koth_2:
+  koth2:
     name: "KOTH 2"
     world: "world"
     mode: "SCORE" # SCORE or CAPTURE
@@ -70,7 +70,7 @@ koths:
       - "11:00"
       - "3:00"
     commandsOnWin:
-      - "say %player% has won %koth%"
+      - "say %player% has won %kothName%"
       - "give %player% diamond 1"
     rules:
       maxTime: 600 # Time in seconds that koth will run for before timing out.
@@ -82,7 +82,7 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      name: "&#FF0000%displayName% &#DDDDDD| &#FF6600%capturer% &#DDDDDD(%timeLeft_formatted%)"
+      name: "#FF0000%name% #DDDDDD| #FF6600%currentCapturer% #DDDDDD(%timeLeft%)"
       # colors: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarColor.html
       color: RED
       # styles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/boss/BarStyle.html
@@ -93,19 +93,19 @@ koths:
       # set to -1 to make it that everyone in the world can see it
       # set to 0 to make it that everyone on the server can see it
       view-distance: 64
-      title: "&#FF0000&l%kothName%"
+      title: "#FF0000&l%name%"
       lines:
         - " "
         - "&cLocation:"
         - " &7| &fX%x%; Y%y%; Z%z%"
         - " "
         - "&cLeaderboard:"
-        - " &e1. &f%score_player_1%: &f%score_points_1%"
-        - " &62. &f%score_player_1%: &f%score_points_2%"
-        - " &63. &f%score_player_1%: &f%score_points_3%"
+        - " &e1. &f%scorePlayer1%: &f%scorePoints1%"
+        - " &62. &f%scorePlayer2%: &f%scorePoints2%"
+        - " &63. &f%scorePlayer3%: &f%scorePoints3%"
         - " &cYou: &f%score%"
         - " "
         - "&cEnds in:"
-        - " &7❙ &f%timeLeft%" # context dependant
+        - " &7❙ &f%timeLeft%"
         - " "
         - "&cplay.yourserver.com"

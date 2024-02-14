@@ -19,4 +19,8 @@ public class MessageUtil {
 	public static void sendMessage(CommandSender sender, String message) {
 		messageSender.sendMessage(sender, PREFIX + message);
 	}
+
+	public static String colorize(String message) {
+		return messageSender.colorize(message);
+	}
 }

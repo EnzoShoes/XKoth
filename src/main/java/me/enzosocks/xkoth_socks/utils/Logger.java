@@ -1,7 +1,7 @@
 package me.enzosocks.xkoth_socks.utils;
 
+import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 import java.util.logging.Level;
 
@@ -27,7 +27,7 @@ public class Logger {
 	}
 
 	public void log(LogLevel level, String message) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', "&8[" + this.prefix + "&8]&r " + level.color + message));
+		Bukkit.getConsoleSender().sendMessage(MessageUtil.colorize("&8[" + this.prefix + "&8]&r " + level.color + message));
 	}
 
 	public static Logger getLogger() {

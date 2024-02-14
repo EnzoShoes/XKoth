@@ -3,6 +3,7 @@ package me.enzosocks.xkoth_socks.schedulers.scoreboards;
 import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
+import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -52,11 +53,13 @@ public class KothScoreboard {
 	public void updateScoreboard(Player capturer, int gameTime, Game game) {
 		if (!enabled)
 			return;
+
+		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
+		scoreboard.getObjective("koth").setDisplayName(MessageUtil.colorize(placeholder.setPlaceholders(game.getKothName(), title)));
 		for (int i = 0; i < lines.size(); i++) {
 			Team team = scoreboard.getTeam(i + "");
-			LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
 			if (team != null)
-				team.setSuffix(ChatColor.RESET + placeholder.setPlaceholders(game.getKothName(), lines.get(i)));
+				team.setSuffix(ChatColor.RESET + MessageUtil.colorize(placeholder.setPlaceholders(game.getKothName(), lines.get(i))));
 			System.out.println("line + " + i + ": " + team.getSuffix());
 		}
 

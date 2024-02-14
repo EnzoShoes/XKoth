@@ -1,5 +1,8 @@
 package me.enzosocks.xkoth_socks.instance.game;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +39,10 @@ public class ScoreTracker {
 
 	public Optional<Integer> getPointsForPosition(int position) {
 		return getScoreAtPosition(position).map(Map.Entry::getValue);
+	}
+
+	public Optional<OfflinePlayer> getPlayerForPosition(int position) {
+		return getScoreAtPosition(position).map(entry -> Bukkit.getOfflinePlayer(entry.getKey()));
 	}
 
 	public boolean isEmpty() {

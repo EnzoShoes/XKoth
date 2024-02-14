@@ -2,6 +2,7 @@ package me.enzosocks.xkoth_socks.schedulers.bossbars;
 
 import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
+import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class TimeBossBar extends IBossBar {
 			}
 		});
 		LocalPlaceholder placeholder = LocalPlaceholder.getInstance();
-		bossbar.setTitle(placeholder.setPlaceholders(game.getKothName(), this.title));
+		bossbar.setTitle(MessageUtil.colorize(placeholder.setPlaceholders(game.getKothName(), this.title)));
 		bossbar.setProgress(1 - ((double) gameTimeInSeconds / game.getRules().getMaxTime()));
 	}
 }
