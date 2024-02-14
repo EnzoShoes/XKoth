@@ -38,8 +38,6 @@ public class GameLoop implements ScoreboardData {
 		//=> XKoth.getInstance() nonsense will be gone
 		Loader<IBossBar> bossbarLoader = new BossBarLoader();
 		bossbar = bossbarLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
-		//Loader<KothScoreboard> scoreboardLoader = new ScoreboardLoader();
-		//kothScoreboard = scoreboardLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 		Loader<ScoreboardManager> scoreboardManagerLoader = new ScoreboardManagerLoader();
 		manager = scoreboardManagerLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 	}
@@ -94,7 +92,7 @@ public class GameLoop implements ScoreboardData {
 		runnable.cancel();
 		gameTime = 0;
 		bossbar.setVisible(false);
-		kothScoreboard.hideScoreboard();
+		manager.clearScoreboards();
 	}
 
 	private Player getPlayerInCuboid() {

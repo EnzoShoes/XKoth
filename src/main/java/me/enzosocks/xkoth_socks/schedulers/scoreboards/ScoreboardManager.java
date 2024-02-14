@@ -2,6 +2,7 @@ package me.enzosocks.xkoth_socks.schedulers.scoreboards;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,16 @@ public class ScoreboardManager implements ScoreboardConfig {
 			KothScoreboard scoreboard = playerScoreboards.get(player.getUniqueId());
 			scoreboard.update(player, scoreboardData);
 		}
+	}
+
+	public void clearScoreboards() {
+		for (UUID uuid : playerScoreboards.keySet()) {
+			Player player = Bukkit.getPlayer(uuid);
+			if (player != null && player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) {
+				player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
+			}
+		}
+		playerScoreboards.clear();
 	}
 
 	@Override
