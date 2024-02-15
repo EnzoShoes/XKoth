@@ -42,7 +42,7 @@ public class ScoreboardManager implements ScoreboardConfig {
 		for (UUID uuid : playerScoreboards.keySet()) {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null && player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) != null) {
-				player.getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
+				player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 			}
 		}
 		playerScoreboards.clear();

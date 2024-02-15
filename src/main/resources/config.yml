@@ -18,7 +18,7 @@ koths:
       - "say %player% has won"
       - "give %player% diamond 1"
     rules:
-      maxTime: 600 # Time in seconds that koth will run for before timing out.
+      maxTime: 5 # Time in seconds that koth will run for before timing out.
       pointsToWin: 100 # at a rate of 1 point per second
       winnerIfTimeRunsOut: true # the player with the most points/longest cap wins if the time runs out
     bossbar:

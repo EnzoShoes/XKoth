@@ -28,8 +28,7 @@ public class GameLoop implements ScoreboardData {
 	private Player capturer;
 	private int gameTime = 0; // time left in seconds before end of game
 	private IBossBar bossbar;
-	//	private KothScoreboard kothScoreboard;
-	private ScoreboardManager manager;
+	private ScoreboardManager scoreboardManager;
 
 	public GameLoop(Game game, String kothName, Cuboid cuboid) {
 		this.game = game;
@@ -39,7 +38,7 @@ public class GameLoop implements ScoreboardData {
 		Loader<IBossBar> bossbarLoader = new BossBarLoader();
 		bossbar = bossbarLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 		Loader<ScoreboardManager> scoreboardManagerLoader = new ScoreboardManagerLoader();
-		manager = scoreboardManagerLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
+		scoreboardManager = scoreboardManagerLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
 	}
 
 	public void startLoop() {
@@ -47,11 +46,11 @@ public class GameLoop implements ScoreboardData {
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
+
 				countPoints();
-				checkForTimeout();
 				bossbar.updateBossbar(capturer, gameTime, game);
-//				kothScoreboard.updateScoreboard(capturer, gameTime, game);
-				manager.updateScoreboards(GameLoop.this);
+				scoreboardManager.updateScoreboards(GameLoop.this);
+				checkForTimeout();
 			}
 		};
 
@@ -92,7 +91,7 @@ public class GameLoop implements ScoreboardData {
 		runnable.cancel();
 		gameTime = 0;
 		bossbar.setVisible(false);
-		manager.clearScoreboards();
+		scoreboardManager.clearScoreboards();
 	}
 
 	private Player getPlayerInCuboid() {
