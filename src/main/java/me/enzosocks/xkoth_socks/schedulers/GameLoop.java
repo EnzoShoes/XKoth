@@ -3,53 +3,56 @@ package me.enzosocks.xkoth_socks.schedulers;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.game.StopReason;
-import me.enzosocks.xkoth_socks.loaders.BossBarLoader;
+import me.enzosocks.xkoth_socks.loaders.BossBarManagerLoader;
 import me.enzosocks.xkoth_socks.loaders.Loader;
 import me.enzosocks.xkoth_socks.loaders.ScoreboardManagerLoader;
-import me.enzosocks.xkoth_socks.schedulers.bossbars.IBossBar;
-import me.enzosocks.xkoth_socks.schedulers.scoreboards.ScoreboardData;
-import me.enzosocks.xkoth_socks.schedulers.scoreboards.ScoreboardManager;
+import me.enzosocks.xkoth_socks.schedulers.displays.DisplayData;
+import me.enzosocks.xkoth_socks.schedulers.displays.DisplayManager;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class GameLoop implements ScoreboardData {
+public class GameLoop implements DisplayData {
 	private Game game;
 	private Cuboid cuboid;
 	private BukkitRunnable runnable;
 	private Player capturer;
 	private int gameTime = 0; // time left in seconds before end of game
-	private IBossBar bossbar;
-	private ScoreboardManager scoreboardManager;
+	private final List<DisplayManager> displayManagers;
+//	private ScoreboardManager scoreboardManager;
+//	private BossBarManager bossBarManager;
 
 	public GameLoop(Game game, String kothName, Cuboid cuboid) {
 		this.game = game;
 		this.cuboid = cuboid;
 		//TODO: Everything should load with loaders eventually, config and path will be passed between loaders
 		//=> XKoth.getInstance() nonsense will be gone
-		Loader<IBossBar> bossbarLoader = new BossBarLoader();
-		bossbar = bossbarLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
-		Loader<ScoreboardManager> scoreboardManagerLoader = new ScoreboardManagerLoader();
-		scoreboardManager = scoreboardManagerLoader.load(XKoth.getInstance().getConfig(), "koths." + kothName);
+		List<Loader<? extends DisplayManager>> displayManagerLoaders = Arrays.asList(
+				new BossBarManagerLoader(),
+				new ScoreboardManagerLoader()
+		);
+
+		displayManagers = displayManagerLoaders.stream()
+				.map(loader -> loader.load(XKoth.getInstance().getConfig(), "koths." + kothName))
+				.collect(Collectors.toList());
 	}
 
 	public void startLoop() {
-		bossbar.setVisible(true);
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
 
 				countPoints();
-				bossbar.updateBossbar(capturer, gameTime, game);
-				scoreboardManager.updateScoreboards(GameLoop.this);
+				//bossbar.updateBossbar(capturer, gameTime, game);
+				//scoreboardManager.update(GameLoop.this);
+				for (DisplayManager displayManager : displayManagers) {
+					displayManager.update(GameLoop.this);
+				}
 				checkForTimeout();
 			}
 		};
@@ -90,8 +93,9 @@ public class GameLoop implements ScoreboardData {
 	public void stopLoop() {
 		runnable.cancel();
 		gameTime = 0;
-		bossbar.setVisible(false);
-		scoreboardManager.clearScoreboards();
+		for (DisplayManager displayManager : displayManagers) {
+			displayManager.clear();
+		}
 	}
 
 	private Player getPlayerInCuboid() {
@@ -113,6 +117,10 @@ public class GameLoop implements ScoreboardData {
 
 	public long getTimeLeft() {
 		return game.getRules().getMaxTime() - gameTime;
+	}
+
+	public double getPercentageTimeLeft() {
+		return 1D - (double) gameTime / game.getRules().getMaxTime();
 	}
 
 	@Override

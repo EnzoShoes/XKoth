@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class KothSchedule {
-	private long nextStartTime;
 	private List<LocalTime> startTimes;
 
 	public KothSchedule() {

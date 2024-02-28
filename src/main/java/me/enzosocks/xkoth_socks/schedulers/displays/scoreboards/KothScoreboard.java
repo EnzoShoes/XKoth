@@ -1,6 +1,7 @@
-package me.enzosocks.xkoth_socks.schedulers.scoreboards;
+package me.enzosocks.xkoth_socks.schedulers.displays.scoreboards;
 
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
+import me.enzosocks.xkoth_socks.schedulers.displays.DisplayData;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.utils.XScoreboard;
 import me.enzosocks.xkoth_socks.utils.messages.MessageUtil;
@@ -14,23 +15,23 @@ public class KothScoreboard extends XScoreboard {
 		this.config = config;
 	}
 
-	public void update(Player player, ScoreboardData scoreboardData) {
-		if (!shouldShowToPlayer(scoreboardData.getCapper(), player, scoreboardData.getCuboid())) {
+	public void update(Player player, DisplayData displayData) {
+		if (!shouldShowToPlayer(displayData.getCapper(), player, displayData.getCuboid())) {
 			player.setScoreboard(null);
 			return;
 		}
 
 		String placeholderedTitle = LocalPlaceholder
-				.replacePlaceholders(player, config.getTitle(), scoreboardData.getKothName());
+				.replacePlaceholders(player, config.getTitle(), displayData.getKothName());
 
 		this.setTitle(MessageUtil.colorize(placeholderedTitle));
 		for (int i = 0; i < config.getLines().size(); i++) {
 			String placeholderedLine = LocalPlaceholder
-					.replacePlaceholders(player, config.getLines().get(i), scoreboardData.getKothName());
+					.replacePlaceholders(player, config.getLines().get(i), displayData.getKothName());
 
 			this.setLine(i, MessageUtil.colorize(placeholderedLine));
 		}
-		
+
 		player.setScoreboard(this.getScoreboard());
 	}
 

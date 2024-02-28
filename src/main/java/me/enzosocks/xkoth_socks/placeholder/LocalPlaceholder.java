@@ -1,5 +1,7 @@
 package me.enzosocks.xkoth_socks.placeholder;
 
+import me.enzosocks.xkoth_socks.XKoth;
+import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.managers.KothManager;
 import me.enzosocks.xkoth_socks.utils.Logger;
@@ -7,6 +9,7 @@ import me.enzosocks.xkoth_socks.utils.TimeUtil;
 import me.enzosocks.xkoth_socks.utils.optionalparser.IntegerOptionalParser;
 import me.enzosocks.xkoth_socks.utils.optionalparser.OptionalParser;
 import me.enzosocks.xkoth_socks.utils.optionalparser.PlayerOptionalParser;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.time.Duration;
@@ -25,6 +28,7 @@ public class LocalPlaceholder {
 	private final Pattern pattern = Pattern.compile("[%]([^%]+)[%]");
 	private final List<AutoPlaceholder> autoPlaceholders = new ArrayList<>();
 	private KothManager manager;
+	private XKoth plugin;
 
 	/**
 	 * static Singleton instance.
@@ -34,40 +38,14 @@ public class LocalPlaceholder {
 	/**
 	 * Private constructor for singleton.
 	 */
-	public LocalPlaceholder(KothManager manager) {
-		this.manager = manager;
+	public LocalPlaceholder(XKoth plugin) {
+		this.plugin = plugin;
+		this.manager = plugin.getKothManager();
 
 		parsers.put((str) -> str.startsWith("scorePlayer"), new PlayerOptionalParser());
 		parsers.put((str) -> str.startsWith("scorePoints"), new IntegerOptionalParser());
 
 		instance = this;
-	}
-
-	/**
-	 * Targets individual %placeholders% and replaces them
-	 *
-	 * @param player
-	 * @param placeholder
-	 * @return replaced string
-	 */
-	public String replacePlaceholders(Player player, String placeholder) {
-		if (placeholder == null || !placeholder.contains("%")) {
-			return placeholder;
-		}
-
-		final String realPrefix = this.prefix + "_";
-
-		Matcher matcher = this.pattern.matcher(placeholder);
-		while (matcher.find()) {
-			String stringPlaceholder = matcher.group(0);
-			String regex = matcher.group(1).replace(realPrefix, "");
-			String replace = this.onRequest(player, regex);
-			if (replace != null) {
-				placeholder = placeholder.replace(stringPlaceholder, replace);
-			}
-		}
-
-		return placeholder;
 	}
 
 	public static String replacePlaceholders(Player player, String placeholder, String kothName) {
@@ -130,7 +108,7 @@ public class LocalPlaceholder {
 	 * @param withoutPrefix
 	 * @return
 	 */
-	public String onRequest(Player player, String withoutPrefix) {
+	public String onRequest(OfflinePlayer player, String withoutPrefix) {
 		String kothName = withoutPrefix.split("_")[0];
 		Koth koth = manager.getKoth(kothName);
 
@@ -160,7 +138,7 @@ public class LocalPlaceholder {
 		return "empty";
 	}
 
-	public String onRequestKoth(Player player, Koth koth, String placeHolder) {
+	public String onRequestKoth(OfflinePlayer player, Koth koth, String placeHolder) {
 		Optional<?> optional = getOptionalValue(player, koth, placeHolder);
 
 		if (optional != null) {
@@ -188,8 +166,13 @@ public class LocalPlaceholder {
 		if (placeHolder.equalsIgnoreCase("countdown"))
 			return TimeUtil.formatTime(Duration.between(LocalTime.now(), koth.getCountdown().getNextStartTime()).getSeconds());
 
-		if (placeHolder.equalsIgnoreCase("timeLeft"))
-			return TimeUtil.formatTime(koth.getGame().getGameLoop().getTimeLeft());
+		if (placeHolder.equalsIgnoreCase("timeLeft")) {
+			Game game = koth.getGame();
+			if (game != null) {
+				return TimeUtil.formatTime(koth.getGame().getGameLoop().getTimeLeft());
+			}
+			return null;
+		}
 
 		if (placeHolder.equalsIgnoreCase("currentCapturer"))
 			return koth.getGame().getGameLoop().getCapper() == null ? "No one is capping" : koth.getGame().getGameLoop().getCapper().getName();
@@ -197,7 +180,7 @@ public class LocalPlaceholder {
 		return null;
 	}
 
-	private Optional<?> getOptionalValue(Player player, Koth koth, String placeHolder) {
+	private Optional<?> getOptionalValue(OfflinePlayer player, Koth koth, String placeHolder) {
 		Pattern scorePlayerPattern = Pattern.compile("scorePlayer(\\d+)");
 		Matcher scorePlayerMatcher = scorePlayerPattern.matcher(placeHolder);
 		if (scorePlayerMatcher.matches()) {
@@ -217,6 +200,10 @@ public class LocalPlaceholder {
 
 	public String getPrefix() {
 		return prefix;
+	}
+
+	public XKoth getPlugin() {
+		return plugin;
 	}
 
 	public static LocalPlaceholder getInstance() {

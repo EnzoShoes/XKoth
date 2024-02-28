@@ -1,6 +1,6 @@
 package me.enzosocks.xkoth_socks.loaders;
 
-import me.enzosocks.xkoth_socks.schedulers.scoreboards.ScoreboardManager;
+import me.enzosocks.xkoth_socks.schedulers.displays.scoreboards.ScoreboardManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;

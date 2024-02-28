@@ -3,8 +3,10 @@ package me.enzosocks.xkoth_socks;
 import me.enzosocks.xkoth_socks.commands.CommandHandler;
 import me.enzosocks.xkoth_socks.managers.ConfigManager;
 import me.enzosocks.xkoth_socks.managers.KothManager;
+import me.enzosocks.xkoth_socks.placeholder.DistantPlaceholder;
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
 import me.enzosocks.xkoth_socks.utils.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,7 +36,12 @@ public final class XKoth extends JavaPlugin {
 		loaders.add(new CommandHandler(this));
 		loaders.forEach(Loader::load);
 
-		localPlaceholder = new LocalPlaceholder(kothManager);
+
+		localPlaceholder = new LocalPlaceholder(this);
+
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new DistantPlaceholder(localPlaceholder).register();
+		}
 	}
 
 	@Override
