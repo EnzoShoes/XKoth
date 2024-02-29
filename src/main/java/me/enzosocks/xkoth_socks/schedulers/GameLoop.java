@@ -10,11 +10,11 @@ import me.enzosocks.xkoth_socks.schedulers.displays.DisplayData;
 import me.enzosocks.xkoth_socks.schedulers.displays.DisplayManager;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameLoop implements DisplayData {
@@ -24,10 +24,8 @@ public class GameLoop implements DisplayData {
 	private Player capturer;
 	private int gameTime = 0; // time left in seconds before end of game
 	private final List<DisplayManager> displayManagers;
-//	private ScoreboardManager scoreboardManager;
-//	private BossBarManager bossBarManager;
 
-	public GameLoop(Game game, String kothName, Cuboid cuboid) {
+	public GameLoop(Game game, Cuboid cuboid) {
 		this.game = game;
 		this.cuboid = cuboid;
 		//TODO: Everything should load with loaders eventually, config and path will be passed between loaders
@@ -38,7 +36,7 @@ public class GameLoop implements DisplayData {
 		);
 
 		displayManagers = displayManagerLoaders.stream()
-				.map(loader -> loader.load(XKoth.getInstance().getConfig(), "koths." + kothName))
+				.map(loader -> loader.load(XKoth.getInstance().getConfig(), "koths." + game.getKothName()))
 				.collect(Collectors.toList());
 	}
 
@@ -46,10 +44,7 @@ public class GameLoop implements DisplayData {
 		runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
-
 				countPoints();
-				//bossbar.updateBossbar(capturer, gameTime, game);
-				//scoreboardManager.update(GameLoop.this);
 				for (DisplayManager displayManager : displayManagers) {
 					displayManager.update(GameLoop.this);
 				}
@@ -63,7 +58,7 @@ public class GameLoop implements DisplayData {
 	private void checkForTimeout() {
 		if (game.getRules().getMaxTime() != -1 && ++gameTime >= game.getRules().getMaxTime()) {
 			if (game.getScoreAtPosition(1).isPresent()) {
-				game.stop(StopReason.TIMEOUT, getTopScorer());
+				game.stop(StopReason.TIMEOUT);
 			} else {
 				game.stop(StopReason.TIMEOUT_NO_WINNER);
 			}
@@ -77,16 +72,6 @@ public class GameLoop implements DisplayData {
 		if (capturer != null) {
 			game.addPoint(capturer, 10);
 		}
-	}
-
-	private String getTopScorer() {
-		//TODO: Have array for highest scorers (for leaderboard) and get from there
-		Optional<Map.Entry<UUID, Integer>> highestScore = game.getScoreAtPosition(1);
-		if (!highestScore.isPresent()) {
-			return "No one";
-		}
-		OfflinePlayer topScorer = Bukkit.getOfflinePlayer(highestScore.get().getKey());
-		return topScorer.getName();
 	}
 
 

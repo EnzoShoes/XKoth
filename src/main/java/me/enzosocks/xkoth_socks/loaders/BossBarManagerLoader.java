@@ -17,16 +17,15 @@ public class BossBarManagerLoader implements Loader<BossBarManager> {
 			return null;
 		}
 
-		String mode = config.getString(path + ".mode");
+		// SCORE MODE
+		Function<BossBarConfig, IBossBar> bossBarSupplier = TimeBossBar::new;
 
-		Function<BossBarConfig, IBossBar> bossBarSupplier = ((x) -> null);
-		if (mode.equalsIgnoreCase("SCORE")) {
-			bossBarSupplier = TimeBossBar::new;
-		} else if (mode.equalsIgnoreCase("CAPTURE")) {
+		String mode = config.getString(path + ".mode");
+		if (mode != null && mode.equalsIgnoreCase("CAPTURE")) {
 			throw new UnsupportedOperationException("Capture mode is not yet supported.");
 		}
-
-		BossBarManager bossBarManager = new BossBarManager(
+		
+		return new BossBarManager(
 				config.getBoolean(path + ".bossbar.enabled"),
 				config.getBoolean(path + ".bossbar.only-show-when-capturing"),
 				config.getInt(path + ".bossbar.view-distance", 0),
@@ -34,7 +33,5 @@ public class BossBarManagerLoader implements Loader<BossBarManager> {
 				BarStyle.valueOf(config.getString(path + ".bossbar.style", BarStyle.SEGMENTED_20.name())),
 				BarColor.valueOf(config.getString(path + ".bossbar.color", BarColor.GREEN.name())),
 				bossBarSupplier);
-
-		return bossBarManager;
 	}
 }

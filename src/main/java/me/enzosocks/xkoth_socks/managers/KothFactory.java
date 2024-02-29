@@ -19,7 +19,6 @@ public class KothFactory {
 	}
 
 	public Koth createKoth(String name, Cuboid cuboid) {
-		//TODO: replace ArrayList with Commands class that has default commands
 		Game game = new Game(name, cuboid, new GameRules(), new ArrayList<>()); // default game
 		KothSchedule schedule = new KothSchedule(); // default schedule
 		return new Koth(name, name, game, schedule);

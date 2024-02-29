@@ -5,6 +5,8 @@ import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.game.GameRules;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.instance.koth.KothSchedule;
+import me.enzosocks.xkoth_socks.loaders.KothScheduleLoader;
+import me.enzosocks.xkoth_socks.loaders.Loader;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.Bukkit;
@@ -12,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,16 +69,9 @@ public class ConfigManager {
 				currentKoth.getConfigurationSection("corner1").getValues(false),
 				currentKoth.getConfigurationSection("corner2").getValues(false)
 		);
-
-		//TODO: Replace with KothSchedule loader
-		List<LocalTime> startTimes = new ArrayList<>();
-		currentKoth.getStringList("kothTimes").forEach(time -> {
-			String[] split = time.split(":");
-			int hour = Integer.parseInt(split[0]);
-			int minute = Integer.parseInt(split[1]);
-			startTimes.add(LocalTime.of(hour, minute, 0));
-		});
-		KothSchedule kothSchedule = new KothSchedule(startTimes);
+		
+		Loader<KothSchedule> loader = new KothScheduleLoader();
+		KothSchedule kothSchedule = loader.load(config, "koths." + kothName + ".kothTimes");
 
 		GameRules gameRules = new GameRules(
 				currentKoth.getInt("rules.maxTime"),

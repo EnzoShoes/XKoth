@@ -15,8 +15,8 @@ koths:
       - "10:00"
       - "2:00"
     commandsOnWin:
-      - "say %player% has won"
-      - "give %player% diamond 1"
+      - "say %winner% has won"
+      - "give %winner% diamond 1"
     rules:
       maxTime: 5 # Time in seconds that koth will run for before timing out.
       pointsToWin: 100 # at a rate of 1 point per second
@@ -70,8 +70,8 @@ koths:
       - "11:00"
       - "3:00"
     commandsOnWin:
-      - "say %player% has won %kothName%"
-      - "give %player% diamond 1"
+      - "say %winner% has won %name%"
+      - "give %winner% diamond 1"
     rules:
       maxTime: 600 # Time in seconds that koth will run for before timing out.
       pointsToWin: 100 # at a rate of 1 point per second

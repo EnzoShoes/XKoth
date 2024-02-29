@@ -38,7 +38,7 @@ public class KothScoreboard extends XScoreboard {
 	protected boolean shouldShowToPlayer(Player capturer, Player player, Cuboid cuboid) {
 		if (config.isOnlyShowWhenCapturing())
 			//TODO: When Player becomes refactored to handle teams, return actual team members here
-			return player.getUniqueId() == player.getUniqueId();
+			return player.getUniqueId() == capturer.getUniqueId();
 		return isPlayerWithinViewDistance(player, cuboid);
 	}
 

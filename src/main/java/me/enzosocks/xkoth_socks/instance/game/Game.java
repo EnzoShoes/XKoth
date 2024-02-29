@@ -1,5 +1,6 @@
 package me.enzosocks.xkoth_socks.instance.game;
 
+import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
 import me.enzosocks.xkoth_socks.schedulers.GameLoop;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
@@ -17,13 +18,13 @@ public class Game {
 	private final ScoreTracker scoreTracker = new ScoreTracker();
 	private final List<String> commandsOnWin;
 	private GameStatus status = GameStatus.STOPPED;
-	private String kothName;
+	private final String kothName;
 
 	public Game(String kothName, Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
 		this.commandsOnWin = commandsOnWin;
 		this.rules = rules;
-		this.gameLoop = new GameLoop(this, kothName, cuboid);
 		this.kothName = kothName;
+		this.gameLoop = new GameLoop(this, cuboid);
 	}
 
 	public void start() {
@@ -35,19 +36,16 @@ public class Game {
 	}
 
 	public void stop(StopReason reason) {
-		stop(reason, "");
-	}
-
-	public void stop(StopReason reason, String winnerName) {
 		status = GameStatus.STOPPED;
 		// Stop all timers
 		this.gameLoop.stopLoop();
 
-		Bukkit.broadcastMessage(reason.getMessage().replace("%player%", winnerName));
+		Bukkit.broadcastMessage(LocalPlaceholder.replacePlaceholders(null, reason.getMessage(), kothName));
 		if (reason.hasWinner) {
-			commandsOnWin.forEach(command ->
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-							command.replace("%player%", winnerName)));
+			commandsOnWin.forEach(command -> {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+						LocalPlaceholder.replacePlaceholders(null, command, kothName));
+			});
 		}
 	}
 
