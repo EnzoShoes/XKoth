@@ -1,6 +1,8 @@
 package me.enzosocks.xkoth_socks.placeholder.placeholders;
 
+import me.enzosocks.xkoth_socks.instance.game.scoreTracker.ScoreTracker;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
+import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,8 +29,16 @@ public class ScorePointsPlaceholder implements XPlaceholder {
 			throw new IllegalArgumentException("Invalid placeholder error");
 		}
 
+		if (!(koth.getGame().getScoreTracker() instanceof ScoreTracker)) {
+			Logger.warning(String.format("Placeholder %s is not valid for koth %s. This placeholder is only usable for score mode", placeholder, koth.getDisplayName()));
+			return "Invalid placeholder. Check console.";
+		}
+
 		int position = Integer.parseInt(scorePointsMatcher.group(1));
-		return koth.getGame().getScoreTracker().getPointsForPosition(position)
+
+		ScoreTracker scoreTracker = (ScoreTracker) koth.getGame().getScoreTracker();
+
+		return scoreTracker.getPointsForPosition(position)
 				.map(Object::toString).orElse(defaultValue);
 	}
 }

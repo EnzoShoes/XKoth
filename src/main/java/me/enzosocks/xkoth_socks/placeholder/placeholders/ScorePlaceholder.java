@@ -20,7 +20,7 @@ public class ScorePlaceholder implements XPlaceholder {
 	@Override
 	public String parse(String placeholder, @NotNull Koth koth, OfflinePlayer player) {
 		try {
-			return String.valueOf(koth.getGame().getScoreTracker().getPoints(player.getUniqueId()));
+			return String.valueOf(koth.getGame().getScoreTracker().getPoints(player));
 		} catch (Exception e) {
 			return defaultValue;
 		}

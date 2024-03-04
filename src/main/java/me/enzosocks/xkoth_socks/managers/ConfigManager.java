@@ -3,10 +3,15 @@ package me.enzosocks.xkoth_socks.managers;
 import me.enzosocks.xkoth_socks.XKoth;
 import me.enzosocks.xkoth_socks.instance.game.Game;
 import me.enzosocks.xkoth_socks.instance.game.GameRules;
+import me.enzosocks.xkoth_socks.instance.game.scoreTracker.CaptureTracker;
+import me.enzosocks.xkoth_socks.instance.game.scoreTracker.ScoreTracker;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
 import me.enzosocks.xkoth_socks.instance.koth.KothSchedule;
 import me.enzosocks.xkoth_socks.loaders.KothScheduleLoader;
 import me.enzosocks.xkoth_socks.loaders.Loader;
+import me.enzosocks.xkoth_socks.schedulers.CaptureGameLoop;
+import me.enzosocks.xkoth_socks.schedulers.GameLoop;
+import me.enzosocks.xkoth_socks.schedulers.ScoreGameLoop;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.Bukkit;
@@ -69,7 +74,7 @@ public class ConfigManager {
 				currentKoth.getConfigurationSection("corner1").getValues(false),
 				currentKoth.getConfigurationSection("corner2").getValues(false)
 		);
-		
+
 		Loader<KothSchedule> loader = new KothScheduleLoader();
 		KothSchedule kothSchedule = loader.load(config, "koths." + kothName + ".kothTimes");
 
@@ -81,7 +86,24 @@ public class ConfigManager {
 
 		List<String> commandsOnWin = currentKoth.getStringList("commandsOnWin");
 
-		Game game = new Game(kothName, cuboid, gameRules, commandsOnWin);
+		String mode = currentKoth.getString("mode");
+
+		if (mode == null) {
+			Logger.warning("Koth " + kothName + " does not have a mode set, defaulting to score mode.");
+			mode = "score";
+		}
+
+		Game game = new Game(kothName, gameRules, commandsOnWin);
+
+		//TODO: replace with factory
+		GameLoop gameLoop = null;
+		if (mode.equalsIgnoreCase("score")) {
+			gameLoop = new ScoreGameLoop(game, cuboid, new ScoreTracker());
+		} else if (mode.equalsIgnoreCase("capture")) {
+			gameLoop = new CaptureGameLoop(game, cuboid, new CaptureTracker());
+		}
+
+		game.setGameLoop(gameLoop);
 
 		String displayName = currentKoth.getString("name");
 		displayName = displayName == null ? kothName : displayName;

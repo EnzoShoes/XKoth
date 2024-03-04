@@ -1,9 +1,6 @@
 package me.enzosocks.xkoth_socks.loaders;
 
-import me.enzosocks.xkoth_socks.schedulers.displays.bossbars.BossBarConfig;
-import me.enzosocks.xkoth_socks.schedulers.displays.bossbars.BossBarManager;
-import me.enzosocks.xkoth_socks.schedulers.displays.bossbars.IBossBar;
-import me.enzosocks.xkoth_socks.schedulers.displays.bossbars.TimeBossBar;
+import me.enzosocks.xkoth_socks.schedulers.displays.bossbars.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,9 +19,9 @@ public class BossBarManagerLoader implements Loader<BossBarManager> {
 
 		String mode = config.getString(path + ".mode");
 		if (mode != null && mode.equalsIgnoreCase("CAPTURE")) {
-			throw new UnsupportedOperationException("Capture mode is not yet supported.");
+			bossBarSupplier = CaptureBossBar::new;
 		}
-		
+
 		return new BossBarManager(
 				config.getBoolean(path + ".bossbar.enabled"),
 				config.getBoolean(path + ".bossbar.only-show-when-capturing"),

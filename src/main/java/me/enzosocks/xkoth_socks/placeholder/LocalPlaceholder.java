@@ -42,6 +42,7 @@ public class LocalPlaceholder {
 				new CountdownPlaceholder("Koth is not scheduled"),
 				new TimeLeftPlaceholder("No ongoing game"),
 				new ScorePlaceholder("0"),
+				new WinnerPlaceholder("No winner"),
 				new SimplePlaceholder("name", Koth::getDisplayName),
 				new SimplePlaceholder("world", koth -> koth.getCuboid().getCenter().getWorld().getName(), "Location not set"),
 				new SimplePlaceholder("currentCapturer", koth -> koth.getGame().getGameLoop().getCapper().getName(), "No one is capping")

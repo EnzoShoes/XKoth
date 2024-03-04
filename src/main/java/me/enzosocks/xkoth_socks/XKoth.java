@@ -20,7 +20,6 @@ public final class XKoth extends JavaPlugin {
 	private LocalPlaceholder localPlaceholder;
 
 	private List<Loader> loaders = new ArrayList<>();
-	;
 
 	private static JavaPlugin instance = null;
 

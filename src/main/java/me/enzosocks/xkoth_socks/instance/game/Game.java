@@ -1,44 +1,36 @@
 package me.enzosocks.xkoth_socks.instance.game;
 
+import me.enzosocks.xkoth_socks.instance.game.scoreTracker.IScoreTracker;
 import me.enzosocks.xkoth_socks.placeholder.LocalPlaceholder;
 import me.enzosocks.xkoth_socks.schedulers.GameLoop;
 import me.enzosocks.xkoth_socks.utils.Cuboid;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 //TODO: code smell ? Large class
 public class Game {
 	public GameRules rules;
-	private final GameLoop gameLoop;
-	private final ScoreTracker scoreTracker = new ScoreTracker();
+	private GameLoop gameLoop;
 	private final List<String> commandsOnWin;
 	private GameStatus status = GameStatus.STOPPED;
 	private final String kothName;
 
-	public Game(String kothName, Cuboid cuboid, GameRules rules, List<String> commandsOnWin) {
+	public Game(String kothName, GameRules rules, List<String> commandsOnWin) {
 		this.commandsOnWin = commandsOnWin;
 		this.rules = rules;
 		this.kothName = kothName;
-		this.gameLoop = new GameLoop(this, cuboid);
 	}
 
 	public void start() {
 		this.gameLoop.startLoop();
 		System.out.println("Game started.");
 		status = GameStatus.RUNNING;
-		scoreTracker.clear();
 		Bukkit.broadcastMessage("Starting point counter.");
 	}
 
 	public void stop(StopReason reason) {
 		status = GameStatus.STOPPED;
-		// Stop all timers
-		this.gameLoop.stopLoop();
 
 		Bukkit.broadcastMessage(LocalPlaceholder.replacePlaceholders(null, reason.getMessage(), kothName));
 		if (reason.hasWinner) {
@@ -47,29 +39,17 @@ public class Game {
 						LocalPlaceholder.replacePlaceholders(null, command, kothName));
 			});
 		}
-	}
 
-	/*
-	 * Returns the score at position (1 is first place)
-	 */
-	public Optional<Map.Entry<UUID, Integer>> getScoreAtPosition(int pos) {
-		return this.scoreTracker.getScoreAtPosition(pos);
-	}
-
-	public void addPoint(Player player, int amount) {
-		this.scoreTracker.addPoints(player.getUniqueId(), amount);
-	}
-
-	public void removePoint(Player player, int amount) {
-		this.scoreTracker.addPoints(player.getUniqueId(), amount);
+		// Stop all timers
+		this.gameLoop.stopLoop();
 	}
 
 	public GameLoop getGameLoop() {
 		return gameLoop;
 	}
 
-	public ScoreTracker getScoreTracker() {
-		return this.scoreTracker;
+	public IScoreTracker getScoreTracker() {
+		return gameLoop.getScoreTracker();
 	}
 
 	public Cuboid getCuboid() {
@@ -94,5 +74,9 @@ public class Game {
 
 	public String getKothName() {
 		return kothName;
+	}
+
+	public void setGameLoop(GameLoop gameLoop) {
+		this.gameLoop = gameLoop;
 	}
 }

@@ -134,12 +134,22 @@ public class Cuboid implements Iterable<Block>, Cloneable, ConfigurationSerializ
 
 	public Cuboid(World world, Map<String, Object> values, Map<String, Object> values1) {
 		this.worldName = world.getName();
-		this.x1 = Math.min((Integer) values.get("x"), (Integer) values1.get("x"));
-		this.x2 = Math.max((Integer) values.get("x"), (Integer) values1.get("x"));
-		this.y1 = Math.min((Integer) values.get("y"), (Integer) values1.get("y"));
-		this.y2 = Math.max((Integer) values.get("y"), (Integer) values1.get("y"));
-		this.z1 = Math.min((Integer) values.get("z"), (Integer) values1.get("z"));
-		this.z2 = Math.max((Integer) values.get("z"), (Integer) values1.get("z"));
+		this.x1 = Math.min(getIntFromObject(values.get("x")), getIntFromObject(values1.get("x")));
+		this.x2 = Math.max(getIntFromObject(values.get("x")), getIntFromObject(values1.get("x")));
+		this.y1 = Math.min(getIntFromObject(values.get("y")), getIntFromObject(values1.get("y")));
+		this.y2 = Math.max(getIntFromObject(values.get("y")), getIntFromObject(values1.get("y")));
+		this.z1 = Math.min(getIntFromObject(values.get("z")), getIntFromObject(values1.get("z")));
+		this.z2 = Math.max(getIntFromObject(values.get("z")), getIntFromObject(values1.get("z")));
+	}
+
+	private int getIntFromObject(Object obj) {
+		if (obj instanceof Double) {
+			return ((Double) obj).intValue();
+		} else if (obj instanceof Integer) {
+			return (Integer) obj;
+		} else {
+			throw new IllegalArgumentException("Expected Double or Integer but found " + obj.getClass().getName());
+		}
 	}
 
 	@Override

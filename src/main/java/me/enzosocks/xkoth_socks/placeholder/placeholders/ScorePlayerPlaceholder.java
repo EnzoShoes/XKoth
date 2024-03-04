@@ -1,6 +1,8 @@
 package me.enzosocks.xkoth_socks.placeholder.placeholders;
 
+import me.enzosocks.xkoth_socks.instance.game.scoreTracker.ScoreTracker;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
+import me.enzosocks.xkoth_socks.utils.Logger;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScorePlayerPlaceholder implements XPlaceholder {
-	private static final Pattern pattern = Pattern.compile("scorePlayer(\\d+)|winner");
+	private static final Pattern pattern = Pattern.compile("scorePlayer(\\d+)");
 	private final String defaultValue;
 
 	public ScorePlayerPlaceholder(String defaultValue) {
@@ -27,10 +29,17 @@ public class ScorePlayerPlaceholder implements XPlaceholder {
 			throw new IllegalArgumentException("Invalid placeholder error");
 		}
 
-		int position = placeholder.equalsIgnoreCase("winner") ?
-				1 : Integer.parseInt(scorePlayerMatcher.group(1));
 
-		return koth.getGame().getScoreTracker().getPlayerForPosition(position)
+		if (!(koth.getGame().getScoreTracker() instanceof ScoreTracker)) {
+			Logger.warning(String.format("Placeholder %s is not valid for koth %s. This placeholder is only usable for score mode", placeholder, koth.getDisplayName()));
+			return "Invalid placeholder. Check console.";
+		}
+
+		ScoreTracker scoreTracker = (ScoreTracker) koth.getGame().getScoreTracker();
+
+		int position = Integer.parseInt(scorePlayerMatcher.group(1));
+
+		return scoreTracker.getPlayerForPosition(position)
 				.map(OfflinePlayer::getName).orElse(defaultValue);
 	}
 }
