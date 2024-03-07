@@ -55,7 +55,7 @@ public class ScoreGameLoop extends AbstractGameLoop implements DisplayData {
 			if (scoreTracker.isEmpty()) {
 				game.stop(StopReason.TIMEOUT_NO_WINNER);
 			} else {
-				game.stop(StopReason.TIMEOUT);
+				game.stop(StopReason.TIMEOUT, scoreTracker.getTopPlayer(), null);
 			}
 		}
 	}

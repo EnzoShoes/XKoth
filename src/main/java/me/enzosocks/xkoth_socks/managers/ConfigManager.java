@@ -1,25 +1,10 @@
 package me.enzosocks.xkoth_socks.managers;
 
 import me.enzosocks.xkoth_socks.XKoth;
-import me.enzosocks.xkoth_socks.instance.game.Game;
-import me.enzosocks.xkoth_socks.instance.game.GameRules;
-import me.enzosocks.xkoth_socks.instance.game.scoreTracker.CaptureTracker;
-import me.enzosocks.xkoth_socks.instance.game.scoreTracker.ScoreTracker;
 import me.enzosocks.xkoth_socks.instance.koth.Koth;
-import me.enzosocks.xkoth_socks.instance.koth.KothSchedule;
-import me.enzosocks.xkoth_socks.loaders.KothScheduleLoader;
-import me.enzosocks.xkoth_socks.loaders.Loader;
-import me.enzosocks.xkoth_socks.schedulers.CaptureGameLoop;
-import me.enzosocks.xkoth_socks.schedulers.GameLoop;
-import me.enzosocks.xkoth_socks.schedulers.ScoreGameLoop;
-import me.enzosocks.xkoth_socks.utils.Cuboid;
-import me.enzosocks.xkoth_socks.utils.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,69 +42,69 @@ public class ConfigManager {
 		plugin.saveConfig();
 	}
 
-	private Koth getKoth(String kothName) {
-		ConfigurationSection currentKoth = config.getConfigurationSection("koths." + kothName);
-		if (currentKoth == null) {
-			throw new IllegalArgumentException("Koth " + kothName + " does not exist!");
-		}
-
-		World world = Bukkit.getWorld(currentKoth.getString("world", "world"));
-		if (world == null) {
-			Logger.warning("World " + currentKoth.getString("world") + " does not exist!");
-			return null;
-		}
-
-		Cuboid cuboid = new Cuboid(
-				world,
-				currentKoth.getConfigurationSection("corner1").getValues(false),
-				currentKoth.getConfigurationSection("corner2").getValues(false)
-		);
-
-		Loader<KothSchedule> loader = new KothScheduleLoader();
-		KothSchedule kothSchedule = loader.load(config, "koths." + kothName + ".kothTimes");
-
-		GameRules gameRules = new GameRules(
-				currentKoth.getInt("rules.maxTime"),
-				currentKoth.getInt("rules.pointsToWin"),
-				currentKoth.getBoolean("rules.winnerIfTimeRunsOut")
-		);
-
-		List<String> commandsOnWin = currentKoth.getStringList("commandsOnWin");
-
-		String mode = currentKoth.getString("mode");
-
-		if (mode == null) {
-			Logger.warning("Koth " + kothName + " does not have a mode set, defaulting to score mode.");
-			mode = "score";
-		}
-
-		Game game = new Game(kothName, gameRules, commandsOnWin);
-
-		//TODO: replace with factory
-		GameLoop gameLoop = null;
-		if (mode.equalsIgnoreCase("score")) {
-			gameLoop = new ScoreGameLoop(game, cuboid, new ScoreTracker());
-		} else if (mode.equalsIgnoreCase("capture")) {
-			gameLoop = new CaptureGameLoop(game, cuboid, new CaptureTracker());
-		}
-
-		game.setGameLoop(gameLoop);
-
-		String displayName = currentKoth.getString("name");
-		displayName = displayName == null ? kothName : displayName;
-
-		return new Koth(kothName, displayName, game, kothSchedule);
-	}
-
-	public List<Koth> getKoths() {
-		List<Koth> koths = new ArrayList<>();
-		for (String kothName : this.config.getConfigurationSection("koths").getKeys(false)) {
-			Koth koth = getKoth(kothName);
-			if (koth != null)
-				koths.add(koth);
-		}
-		return koths;
-	}
+//	private Koth getKoth(String kothName) {
+//		ConfigurationSection currentKoth = config.getConfigurationSection("koths." + kothName);
+//		if (currentKoth == null) {
+//			throw new IllegalArgumentException("Koth " + kothName + " does not exist!");
+//		}
+//
+//		World world = Bukkit.getWorld(currentKoth.getString("world", "world"));
+//		if (world == null) {
+//			Logger.warning("World " + currentKoth.getString("world") + " does not exist!");
+//			return null;
+//		}
+//
+//		Cuboid cuboid = new Cuboid(
+//				world,
+//				currentKoth.getConfigurationSection("corner1").getValues(false),
+//				currentKoth.getConfigurationSection("corner2").getValues(false)
+//		);
+//
+//		Loader<KothSchedule> loader = new KothScheduleLoader();
+//		KothSchedule kothSchedule = loader.load(config, "koths." + kothName + ".kothTimes");
+//
+//		GameRules gameRules = new GameRules(
+//				currentKoth.getInt("rules.maxTime"),
+//				currentKoth.getInt("rules.pointsToWin"),
+//				currentKoth.getBoolean("rules.winnerIfTimeRunsOut")
+//		);
+//
+//		List<String> commandsOnWin = currentKoth.getStringList("commandsOnWin");
+//
+//		String mode = currentKoth.getString("mode");
+//
+//		if (mode == null) {
+//			Logger.warning("Koth " + kothName + " does not have a mode set, defaulting to score mode.");
+//			mode = "score";
+//		}
+//
+//		Game game = new Game(kothName, gameRules, commandsOnWin);
+//
+//		//TODO: replace with factory
+//		GameLoop gameLoop = null;
+//		if (mode.equalsIgnoreCase("score")) {
+//			gameLoop = new ScoreGameLoop(game, cuboid, new ScoreTracker());
+//		} else if (mode.equalsIgnoreCase("capture")) {
+//			gameLoop = new CaptureGameLoop(game, cuboid, new CaptureTracker());
+//		}
+//
+//		game.setGameLoop(gameLoop);
+//
+//		String displayName = currentKoth.getString("name");
+//		displayName = displayName == null ? kothName : displayName;
+//
+//		return new Koth(kothName, displayName, game, kothSchedule);
+//	}
+//
+//	public List<Koth> getKoths() {
+//		List<Koth> koths = new ArrayList<>();
+//		for (String kothName : this.config.getConfigurationSection("koths").getKeys(false)) {
+//			Koth koth = getKoth(kothName);
+//			if (koth != null)
+//				koths.add(koth);
+//		}
+//		return koths;
+//	}
 
 	public FileConfiguration getConfig() {
 		return config;

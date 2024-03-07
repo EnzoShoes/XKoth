@@ -51,4 +51,9 @@ public class CaptureTracker implements IScoreTracker {
 	public boolean isEmpty() {
 		return true;
 	}
+
+	@Override
+	public UUID getTopPlayer() {
+		return capper;
+	}
 }

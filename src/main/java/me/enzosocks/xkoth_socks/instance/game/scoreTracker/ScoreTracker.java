@@ -59,6 +59,9 @@ public class ScoreTracker implements IScoreTracker {
 		return getScoreAtPosition(position).map(entry -> Bukkit.getOfflinePlayer(entry.getKey()));
 	}
 
+	public Optional<UUID> getUUIDForPosition(int position) {
+		return getScoreAtPosition(position).map(Map.Entry::getKey);
+	}
 
 	public Optional<Integer> getPointsForPosition(int position) {
 		return getScoreAtPosition(position).map(Map.Entry::getValue);
@@ -66,5 +69,9 @@ public class ScoreTracker implements IScoreTracker {
 
 	public boolean isEmpty() {
 		return points.isEmpty();
+	}
+
+	public UUID getTopPlayer() {
+		return getUUIDForPosition(1).orElse(null);
 	}
 }

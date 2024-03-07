@@ -1,4 +1,4 @@
-package me.enzosocks.xkoth_socks;
+package me.enzosocks.xkoth_socks.enums;
 
 public enum ErrorMessage {
 	SUCCESS("§aSuccess!"),

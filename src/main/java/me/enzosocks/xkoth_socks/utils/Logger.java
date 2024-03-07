@@ -45,4 +45,5 @@ public class Logger {
 			this.level = level;
 		}
 	}
+
 }

@@ -53,7 +53,7 @@ public class CaptureGameLoop extends AbstractGameLoop implements DisplayData {
 
 	private void checkForCapture() {
 		if (scoreTracker.getPoints(scoreTracker.getCapper()) >= game.getRules().getPointsToWin()) {
-			game.stop(StopReason.CAPTURE);
+			game.stop(StopReason.CAPTURE, scoreTracker.getCapper().getUniqueId(), null);
 		}
 	}
 

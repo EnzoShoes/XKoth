@@ -20,4 +20,6 @@ public interface IScoreTracker {
 	Player getCapper();
 
 	void changeCapper(UUID capper);
+
+	UUID getTopPlayer();
 }
